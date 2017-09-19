@@ -22,6 +22,12 @@
 
 #include "Crypt.h"
 
+#ifdef __linux__
+#include "Posix/cifm.h"
+#else
+#define CI_FixName(a) a
+#endif
+
 #define INVPAL_BITS 6
 
 ImageNode *ImageNode::Find(const char *n, bool mip, bool trans, AlphaGradType agrad){
@@ -296,7 +302,7 @@ int ResourceManager::LoadSound(SoundNode *node){	//Ditto a sound, re-does max bi
 		if(pFM->Open(node->name) || DisableLoading){	//Found on disk.
 			OutputDebugLog(CStr("Loading Sound: ") + node->name + "\n");
 			if(!DisableLoading)
-				node->buffer.loadFromFile(pFM->GetFileName().get());
+				node->buffer.loadFromFile(CI_FixName(pFM->GetFileName().get()));
 			node->id = -1;
 			pFM->PopFile();
 			return 1;

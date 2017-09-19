@@ -22,6 +22,12 @@
 #include <SFML/Graphics.hpp>
 #include <GL/glew.h>
 
+#ifdef __linux__
+#include "Posix/cifm.h"
+#else
+#define CI_FixName(a) a
+#endif
+
 int MaxOpenGLTextureSize = 0;
 unsigned int TextureCompressionType=0;
 
@@ -69,7 +75,7 @@ void GenericBuffer::CreateBuffer(int w, int h, bool fullscreen, const char *Name
 		window.setActive();
 
 		sf::Image image;
-		image.loadFromFile(sIcon);
+		image.loadFromFile(CI_FixName(sIcon));
 		window.setIcon(image.getSize().x, image.getSize().y, image.getPixelsPtr());
 		window.setMouseCursorVisible(false);
 

@@ -105,39 +105,55 @@ printf("trying to open %s\n");
 	return false;
 }
 
-#pragma pack(push,2)
+#ifdef __linux__
+#define U8 	uint8_t
+#define U16	uint16_t
+#define U32 uint32_t
+#define I32 int32_t
+#else
+#define U8 unsigned char
+#define U16 unsigned short
+#define U32 unsigned long
+#define I32 long
+#endif
+
+#pragma pack(push,1)
 struct BitmapFileHeader
 {
-	unsigned short  bfType;
-	unsigned long   bfSize;
-	unsigned short  bfReserved1;
-	unsigned short  bfReserved2;
-	unsigned long   bfOffBits;
+	U16  bfType;
+	U32   bfSize;
+	U16  bfReserved1;
+	U16  bfReserved2;
+	U32   bfOffBits;
 };
 #pragma pack(pop)
 
+#pragma pack(push,1)
 struct BitmapInfoHeader
 {
-	unsigned long   biSize;
-	long            biWidth;
-	long            biHeight;
-	unsigned short  biPlanes;
-	unsigned short  biBitCount;
-	unsigned long   biCompression;
-	unsigned long   biSizeImage;
-	long            biXPelsPerMeter;
-	long            biYPelsPerMeter;
-	unsigned long   biClrUsed;
-	unsigned long   biClrImportant;
+	U32   biSize;
+	I32            biWidth;
+	I32            biHeight;
+	U16  biPlanes;
+	U16  biBitCount;
+	U32   biCompression;
+	U32   biSizeImage;
+	I32            biXPelsPerMeter;
+	I32            biYPelsPerMeter;
+	U32   biClrUsed;
+	U32   biClrImportant;
 };
+#pragma pop
 
+#pragma pack(push,1)
 struct RGBQuad
 {
-	unsigned char rgbBlue;
-	unsigned char rgbGreen;
-	unsigned char rgbRed;
-	unsigned char rgbReserved;
+	U8 rgbBlue;
+	U8 rgbGreen;
+	U8 rgbRed;
+	U8 rgbReserved;
 };
+#pragma pop
 
 bool LoadBMP(FILE *file, Bitmap *bmp, PaletteEntry *pe){
 	BitmapFileHeader    BMPFileHead;
