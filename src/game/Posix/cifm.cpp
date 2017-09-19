@@ -117,6 +117,7 @@ const char* get_name(const char *name) {
                     strcpy(Cache[0]->dest, tmp);
                     free(r);
                     free(n);
+                    closedir(d);
                     return Cache[0]->dest;
                 }
             }
@@ -142,13 +143,12 @@ FILE* ci_fopen(const char* name, const char* mode)
         return ret;
     const char* fixedname = get_name(name);
     ret = fopen(fixedname, mode);
-
     return ret;
 }
 
 const char* CI_FixName(const char* name)
 {
     const char* fixedname = get_name(name);
-
+    
     return fixedname;
 }
