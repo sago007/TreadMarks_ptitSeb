@@ -6,6 +6,8 @@ SET(BUILD_GAME true CACHE BOOL "Whether or not to build the main game.")
 SET(BUILD_MASTER false CACHE BOOL "Whether or not to build the master server.")
 SET(BUILD_HEADLESS false CACHE BOOL "Set to true if you want to build a headless server instead of the whole game.")
 
+SET(PANDORA false CACHE BOOL "Build for the Pandora.")
+
 IF(WIN32)
   SET(CERT "" CACHE FILEPATH "The location of the digital certificate with which to sign your installer.")
   SET(CERT_PASS "" CACHE STRING "The password with which to use your digital certificate.")
@@ -44,6 +46,10 @@ IF(MSVC)
   ADD_DEFINITIONS(/D_CRT_SECURE_NO_WARNINGS)
   ADD_DEFINITIONS(/wd4244)
   ADD_DEFINITIONS(/wd4018)
+ENDIF()
+
+IF(PANDORA)
+  ADD_DEFINITIONS(-DPANDORA)
 ENDIF()
 
 IF(BUILD_HEADLESS)
