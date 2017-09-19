@@ -32,7 +32,7 @@
 #include "../Terrain.h"
 #include "../Render.h"
 #include "../Poly.h"
-#include "../CamRBD.h"
+#include "../CamRbd.h"
 #include "../Image.h"
 #include "../ResourceManager.h"
 #include "../CfgParse.h"
@@ -59,8 +59,9 @@ int FastFtoL(float f){
 
 //#pragma optimize("aw", on)
 
+#ifndef SQUARE
 #define SQUARE(x) ((x) * (x))
-
+#endif
 
 static void GLViewplane(float w, float h, float view, float n, float f){
 	float x = n * ((w / 2.0f) / view);
@@ -208,7 +209,7 @@ int BinaryTriangle2::Split2(){//float propoh){	//Note, leaves, cl->r and cr->l h
 };
 void BinaryTriangle2::Split(){//float propoh){
 //	h = propoh;
-	if(b == NULL){	//No bottom, so split half-diamond.
+	if(b == 0){	//No bottom, so split half-diamond.
 		if(Split2()){
 			BTP(cl)->r = BTP(cr)->l = 0;	//Null hanging pointers.
 		}
@@ -359,24 +360,24 @@ void BinaryTriangle2::TestSplitClip(int level, int index,
 	if(t < -radius || t2 < -radius){	//Clipped totally.
 		//Okay, trying something...  Set neighbor pointers that reference this to null, so it won't be
 		//force split at all.  This will BREAK if a concurrent tree is used...
-		cl = cr = NULL;	//In case we have already been force split some amount.
+		cl = cr = 0;	//In case we have already been force split some amount.
 		if(b){
-			if(BTP(BTP(b)->b) == this) BTP(b)->b = NULL;
-			else if(BTP(BTP(b)->l) == this) BTP(b)->l = NULL;
-			else if(BTP(BTP(b)->r) == this) BTP(b)->r = NULL;
-			b = NULL;
+			if(BTP(BTP(b)->b) == this) BTP(b)->b = 0;
+			else if(BTP(BTP(b)->l) == this) BTP(b)->l = 0;
+			else if(BTP(BTP(b)->r) == this) BTP(b)->r = 0;
+			b = 0;
 		}
 		if(l){
-			if(BTP(BTP(l)->b) == this) BTP(l)->b = NULL;
-			else if(BTP(BTP(l)->l) == this) BTP(l)->l = NULL;
-			else if(BTP(BTP(l)->r) == this) BTP(l)->r = NULL;
-			l = NULL;
+			if(BTP(BTP(l)->b) == this) BTP(l)->b = 0;
+			else if(BTP(BTP(l)->l) == this) BTP(l)->l = 0;
+			else if(BTP(BTP(l)->r) == this) BTP(l)->r = 0;
+			l = 0;
 		}
 		if(r){
-			if(BTP(BTP(r)->b) == this) BTP(r)->b = NULL;
-			else if(BTP(BTP(r)->l) == this) BTP(r)->l = NULL;
-			else if(BTP(BTP(r)->r) == this) BTP(r)->r = NULL;
-			r = NULL;
+			if(BTP(BTP(r)->b) == this) BTP(r)->b = 0;
+			else if(BTP(BTP(r)->l) == this) BTP(r)->l = 0;
+			else if(BTP(BTP(r)->r) == this) BTP(r)->r = 0;
+			r = 0;
 		}
 		iheight = IHEIGHT_NORENDER;
 		return;

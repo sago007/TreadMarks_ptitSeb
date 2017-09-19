@@ -101,7 +101,7 @@ int Activated(EntityBase **e = NULL){
 		return BID_FirstTimeOnMenu;
 	}
 	EntityGID a = CTankGame::Get().GetVW()->GetActivated();
-	CTankGame::Get().GetVW()->SetActivated(NULL);
+	CTankGame::Get().GetVW()->SetActivated(0);
 	if(a){
 		for(int i = 0; i < MAX_SLOTS; i++){
 			if(GUISlot[i].gid == a){
@@ -1072,8 +1072,8 @@ void DoMain()
 		StartHelp(HELP_OrderingInfo);
 		return;
 	case BID_Web :
-		SetActiveWindow(NULL);
-		OpenWebLink("http://www.longbowgames.com");
+		//SetActiveWindow(NULL);
+		//OpenWebLink("http://www.longbowgames.com");
 
 		break;
 	case BID_Tutorial:
@@ -2065,7 +2065,7 @@ void DoServerSelect()
 			for(int i = -10; i <= 10; i++){	//Broadcast to 21 port radius.
 				to.sin_port = htons(CTankGame::Get().GetSettings()->ServerPort + i);
 				if(CTankGame::Get().GetMasterNet()->SendOutOfBandPacket(&to, (char*)pe.Data(), pe.BytesUsed())){
-					OutputDebugLog("Sent HeartReq to " + CStr(inet_ntoa(to.sin_addr)) + ":" + String(ntohs(to.sin_port)) + "\n");
+					OutputDebugLog("Sent HeartReq to " + CStr(inet_ntoa(to.sin_addr)) + ":" + String(int(ntohs(to.sin_port))) + "\n");
 				}
 			}
 			AreLanServers = true;

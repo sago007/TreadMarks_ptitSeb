@@ -92,6 +92,7 @@ bool MakeRemapTable(unsigned char *Remap, const PaletteEntry *oldpe, const Inver
 
 bool LoadBMP(const char *name, Bitmap *bmp, PaletteEntry *pe){
 	FILE *f;
+printf("trying to open %s\n");
 	if(f = fopen(name, "rb")){
 		bool t = LoadBMP(f, bmp, pe);
 		fclose(f);

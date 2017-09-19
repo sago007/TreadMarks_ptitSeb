@@ -1679,7 +1679,7 @@ bool CTankGame::DoFrame(){
 				if(insig){
 					PlayerEnt->SetInt(ATT_INSIGNIA2_HASH, insig->thash);
 				}else{
-					PlayerEnt->SetInt(ATT_INSIGNIA2_HASH, NULL);
+					PlayerEnt->SetInt(ATT_INSIGNIA2_HASH, 0);
 				}
 				int i = 0;
 				for(i = 0; i < GetNumTeams(); i++){	//Make sure team insignia is on OK list.
@@ -2536,7 +2536,7 @@ bool CTankGame::StartGame(){
 	//
 	VW.SetChatMode(0);
 	VW.ClearChar();
-	VW.SetFocus(NULL);
+	VW.SetFocus(0);
 	//
 	unsigned int gm = GAMEMODE_NOCANDRIVE;
 	if(GameSettings.Deathmatch) gm |= GAMEMODE_DEATHMATCH;
@@ -2779,7 +2779,7 @@ bool CTankGame::StopGame(){
 	//
 	VW.SetChatMode(0);
 	VW.ClearChar();
-	VW.SetFocus(NULL);
+	VW.SetFocus(0);
 	//
 	VW.ClearVoxelWorld();	//Frees the map and all textures.
 	GameState.NumAITanks = 0;
@@ -2822,13 +2822,13 @@ void CTankGame::ProcessServerCommand(char* sCommand)
 			if (sTmp2 != NULL) // we had another token
 			{
 				TmpCommand->sEntry[strlen(sTmp)-1] = ' '; // inserting a space ... might have been a newline or a tab, but now its a space
-				TmpCommand->sEntry[strlen(sTmp)] = NULL;
+				TmpCommand->sEntry[strlen(sTmp)] = '\0';
 
 				strcpy(&TmpCommand->sEntry[strlen(sTmp)], sTmp2);
 			}
 			// we might have a trailing " to remove
 			if(TmpCommand->sEntry[strlen(TmpCommand->sEntry)-1] == '"')
-				TmpCommand->sEntry[strlen(TmpCommand->sEntry)-1] = NULL;
+				TmpCommand->sEntry[strlen(TmpCommand->sEntry)-1] = '\0';
 		}
 		else
 		{
@@ -2846,7 +2846,7 @@ void CTankGame::ProcessServerCommand(char* sCommand)
 #endif
 		for (int i = 0; i < MAX_CLIENTS; i++)
 		{
-			if(VW.Clients[i].ClientName[0] != NULL)
+			if(VW.Clients[i].ClientName[0] != '\0')
 			{
 				EntityBase* ClientEnt;
 				if(ClientEnt = VW.GetEntity(VW.Clients[i].ClientEnt))

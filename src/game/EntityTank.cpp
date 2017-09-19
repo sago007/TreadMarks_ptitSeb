@@ -688,12 +688,12 @@ EntityTree::EntityTree(EntityTypeBase *et, Vec3 Pos, Rot3 Rot, Vec3 Vel,
 bool EntityTree::CollisionWith(EntityBase *collider, Vec3 colpnt){
 	EntityTreeType *ET = (EntityTreeType*)TypePtr;
 	if(LengthVec3(collider->Velocity) > TREEEXPLOVEL){
-		VW->AddEntity("explo", ET->type_explokill, Position, NULL, NULL, 0, NULL, 0, ADDENTITY_FORCENET);
+		VW->AddEntity("explo", ET->type_explokill, Position, NULL, NULL, 0, 0, 0, ADDENTITY_FORCENET);
 		Remove();
 		return true;
 	}else{
 		if(LengthVec3(collider->Velocity) > TREESMOKEVEL && abs(mssincesmoke) > 500){
-			VW->AddEntity("explo", ET->type_explodefol, Position, NULL, NULL, 0, NULL, 0, ADDENTITY_FORCENET);
+			VW->AddEntity("explo", ET->type_explodefol, Position, NULL, NULL, 0, 0, 0, ADDENTITY_FORCENET);
 			frame = std::max(0, frame - 1);
 			mssincesmoke = 0;
 		}
@@ -1527,7 +1527,7 @@ EntityProjectile::EntityProjectile(EntityTypeBase *et, Vec3 Pos, Rot3 Rot, Vec3 
 	//TODO:  Do something about bolt-on weapons colliding with things behind the tank...
 	//DONE, above back-shifting of lPos is bad, as collision will occur with firing tank or weapon, then
 	//position will back up to behind the tank and rear objects will be collided with.
-	godentity = NULL;
+	godentity = 0;
 	firstthink = 1;
 	damage = TP->type_damage;
 	lastsmoketime = 0;
@@ -1708,7 +1708,7 @@ bool EntityProjectile::Think(){
 							VW->AddEntity("explo", TP->exploent, lP, NULL, NULL, 0, /*FLAG_EXPLO_UP*/0, 0, ADDENTITY_FORCENET);
 							//Do cratering here!
 							CopyVec3(lP, Position);
-							Detonate(NULL);
+							Detonate(0);
 							Remove();
 						}else{
 							if(TP->Transitory) Remove();	//If client, only predict removal on transitories.
@@ -1771,7 +1771,7 @@ bool EntityProjectile::Think(){
 		if(TP->type_detonate){
 			if(VW->Net.IsClientActive() == false){	//Only spawn these ourselves if we are NOT a client.
 				VW->AddEntity("explo", TP->exploent, Position, NULL, NULL, 0, 0, 0, ADDENTITY_FORCENET);
-				Detonate(NULL);	//Blow up at end of life.
+				Detonate(0);	//Blow up at end of life.
 			}
 		}
 		Remove();
@@ -2152,7 +2152,7 @@ EntityWeapon::EntityWeapon(EntityTypeBase *et, Vec3 Pos, Rot3 Rot, Vec3 Vel,
 	ltank = tank;
 	firesound = 0;
 	Position[1] = VW->Map.FGetI(Position[0], -Position[2]) + WEAPON_FLOAT;
-	tankgod = NULL;
+	tankgod = 0;
 	ClearVec3(secrot);
 	secrotlerp = 0.0f;
 	secent = 0;
@@ -2251,7 +2251,7 @@ bool EntityWeapon::Think(){
 			if(e){
 				if(e->SetInt(ATT_CMD_NICEREMOVE, 1) == false) e->Remove();	//Try nice remove, if that fails, normal remove.
 			}
-			firesound = NULL;
+			firesound = 0;
 		}
 		//
 //if(Fire) OutputDebugLog("*** Weapon's tank is 0 but Fire is set.\n");
@@ -2339,7 +2339,7 @@ bool EntityWeapon::Think(){
 			if(e){
 				if(e->SetInt(ATT_CMD_NICEREMOVE, 1) == false) e->Remove();	//Try nice remove, if that fails, normal remove.
 			}
-			firesound = NULL;
+			firesound = 0;
 			SendPacket = 1;
 		}
 		//
@@ -2695,7 +2695,7 @@ bool EntitySpewer::Think(){
 				AddVec3(Position, TP->type_launchcoords, tv);
 				//
 				EntityProjectile::SetCurrentOwner(curowner);	//This is so if a projectile creates us, any projectiles we create will have same tank owner id.
-				VW->AddEntity("", TP->type_spewtype[type], tv, Rotation, vel, 0, 0, NULL, (TP->type_propagatespew ? ADDENTITY_FORCENET : NULL));
+				VW->AddEntity("", TP->type_spewtype[type], tv, Rotation, vel, 0, 0, 0, (TP->type_propagatespew ? ADDENTITY_FORCENET : NULL));
 				EntityProjectile::SetCurrentOwner(0);
 				//
 				lastspewtime = VW->Time();

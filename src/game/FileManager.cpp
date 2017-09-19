@@ -74,7 +74,7 @@ int FileManager::AddSearchDir(const char *dir){	//Adds a directory to the search
 }
 int FileManager::FindPackedFiles(){	//Scans for packed files in current search directories and makes note of them for further searches.
 	//NOT IMPLEMENTED YET!!!
-	return NULL;
+	return 0;
 }
 FILE *FileManager::Open(const char *name){	//The returned pointer is for convenience only!  DO NOT fclose the file stream!
 	Close();
@@ -134,15 +134,15 @@ void FileManager::Close(){
 //These work on the currently opened file, either physical or in pack.
 size_t FileManager::fread(void *buf, size_t size, size_t count){
 	if(f && buf) return ::fread(buf, size, count, f);
-	return NULL;
+	return 0;
 }
 int FileManager::fseek(long offset, int origin){
 	if(f) return ::fseek(f, offset, origin);
-	return NULL;
+	return 0;
 }
 long FileManager::ftell(){
 	if(f) return ::ftell(f);
-	return NULL;
+	return 0;
 }
 long FileManager::length(){
 	long pos, len = 0;

@@ -228,7 +228,7 @@ bool EntityGUIBackground::Think(){
 		float col = (TP->type_rendflags & SPRITE_BLEND_ADD ? fade : 1.0f);
 	//	if(niceremove) fade *= 1.0f - ((float)niceremove / std::max(0.1f, TP->type_removetime * 1000.0f));
 		//
-		double a = ((double)VW->Time() / 1000.0 / std::max(0.1, (double)TP->type_rotatetime)) * PI2;
+		/*double*/float a = (/*(double)*/(float)VW->Time() / 1000.0 / std::max<float>(0.1, (float)TP->type_rotatetime)) * PI2;
 		float xv = sin(a) * TP->type_rotateshift;
 		float yv = -cos(a) * TP->type_rotateshift;
 		float u1 = TP->type_xscale + xv;

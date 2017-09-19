@@ -982,17 +982,17 @@ bool EntityRacetank::Think(){
 			Vec3 tp1 = {0.0f, vh.BndMax[1] * 0.8f, 0.0f}, tp2;
 			Vec3MulMat43(tp1, tankMat, tp2);
 			if(health > 0.4f || Position[1] < WATERHEIGHT){	//New, no fire if under water!
-				VW->AddEntity("smoke", TP->smoketype, tp2, NULL, CVec3(0.0f, 4.0f, 0.0f), 1000, NULL, 0, 0);
+				VW->AddEntity("smoke", TP->smoketype, tp2, NULL, CVec3(0.0f, 4.0f, 0.0f), 1000, 0, 0, 0);
 			}else{
 		//	if(health < 0.6f){
 				tp2[0] += ((float)TMrandom() / (float)RAND_MAX) * 0.2f;
 				tp2[1] += 0.1f;
 				tp2[2] += ((float)TMrandom() / (float)RAND_MAX) * 0.2f;
-				VW->AddEntity("smoke", TP->onfiretype, tp2, NULL, CVec3(0.0f, 3.0f, 0.0f), 1000, NULL, 0, 0);
+				VW->AddEntity("smoke", TP->onfiretype, tp2, NULL, CVec3(0.0f, 3.0f, 0.0f), 1000, 0, 0, 0);
 				if(!playertank){	//Hacky extra fire for non-player with slower smoke.
 					tp2[1] -= 0.3f;
 					ScaleAddVec3(Velocity, 0.1f, tp2);
-					VW->AddEntity("smoke", TP->onfiretype, tp2, NULL, CVec3(0.0f, 3.0f, 0.0f), 1000, NULL, 0, 0);
+					VW->AddEntity("smoke", TP->onfiretype, tp2, NULL, CVec3(0.0f, 3.0f, 0.0f), 1000, 0, 0, 0);
 				}
 			}
 		}
@@ -1005,7 +1005,7 @@ bool EntityRacetank::Think(){
 		//
 		Vec3MulMat43(sm1, tankMat, tp);
 		if(fabsf(ltread) > 0.5f)
-			VW->AddEntity("smoke", TP->smoketype, tp, NULL, CVec3(0.0f, 2.0f, 0.0f), 1000, NULL, 0, 0);
+			VW->AddEntity("smoke", TP->smoketype, tp, NULL, CVec3(0.0f, 2.0f, 0.0f), 1000, 0, 0, 0);
 		//
 		CopyVec3(vh.WP[vh.BackLeft], tp);
 		ttx = tp[0];
@@ -1022,7 +1022,7 @@ bool EntityRacetank::Think(){
 		//
 		Vec3MulMat43(sm2, tankMat, tp);
 		if(fabsf(rtread) > 0.5f)
-			VW->AddEntity("smoke", TP->smoketype, tp, NULL, CVec3(0.0f, 2.0f, 0.0f), 1000, NULL, 0, 0);
+			VW->AddEntity("smoke", TP->smoketype, tp, NULL, CVec3(0.0f, 2.0f, 0.0f), 1000, 0, 0, 0);
 		//
 		CopyVec3(vh.WP[vh.BackRight], tp);
 		ttx = tp[0];
@@ -1053,7 +1053,7 @@ bool EntityRacetank::Think(){
 						Vec3 tv = {vh.WP[w].x, std::max(WATERHEIGHT * 0.5f, vh.WP[w].y), vh.WP[w].z};
 						//
 						VW->AddEntity("crud", egod->QueryString(ATT_ECO_CRUD + eco), tv, NULL,
-							CVec3(0.0f, std::max(2.0f, vh.LinearVelocity * 0.2f), 0.0f), 0, NULL, 0, 0);
+							CVec3(0.0f, std::max(2.0f, vh.LinearVelocity * 0.2f), 0.0f), 0, 0, 0, 0);
 						rumblev += rumbleinc;
 					}
 				}
