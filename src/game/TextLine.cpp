@@ -18,6 +18,11 @@
 
 #include "TextLine.hpp"
 
+#ifdef __linux__
+#include "Posix/cifm.h"
+#define fopen(a, b) ci_fopen(a, b)
+#endif
+
 CText Text;
 CText Names;
 CText Weapons;

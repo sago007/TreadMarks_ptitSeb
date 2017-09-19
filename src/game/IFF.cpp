@@ -37,6 +37,10 @@
 #include <netdb.h>
 #endif
 #include "IFF.h"
+#ifdef __linux__
+#include "Posix/cifm.h"
+#define fopen(a, b) ci_fopen(a, b)
+#endif
 
 using namespace std;
 

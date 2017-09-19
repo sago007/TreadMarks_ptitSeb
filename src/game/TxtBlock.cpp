@@ -17,6 +17,10 @@
 #include <stdlib.h>
 
 #include "TxtBlock.hpp"
+#ifdef __linux__
+#include "Posix/cifm.h"
+#define fopen(a, b) ci_fopen(a, b)
+#endif
 
 CTextBlock TextBlock;
 CTextBlock TextBlock2;

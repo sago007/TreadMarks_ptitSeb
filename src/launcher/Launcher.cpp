@@ -25,6 +25,11 @@
 #include "../game/Directories.h"
 #include <stdio.h>
 
+#ifdef __linux__
+#include "Posix/cifm.h"
+#define fopen(a, b) ci_fopen(a, b)
+#endif
+
 BOOL CALLBACK DlgProc(HWND dlgwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
 //int ConfigDialog(){

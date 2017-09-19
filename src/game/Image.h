@@ -46,6 +46,10 @@
 #include "Quantizer.h"
 #include "CStr.h"
 
+#ifdef __linux__
+#include "Posix/cifm.h"
+#endif
+
 struct ARGB{
 	union{
 		unsigned long argb;
@@ -243,7 +247,12 @@ public:
 	bool SaveBMP(FILE *f, bool noflip = false){ return ::SaveBMP(f, this, ppe, noflip); };
 	bool LoadBMP8(const char *bmp){	//Forces the loaded bitmap down to 8 bit, if true color.
 		FILE *f;
-		if(bmp && (f = fopen(bmp, "rb"))){
+#ifdef __linux__
+		if(bmp && (f = ci_fopen(bmp, "rb")))
+#else
+		if(bmp && (f = fopen(bmp, "rb")))
+#endif
+		{
 			if(LoadBMP8(f)){
 				fclose(f);
 				return true;

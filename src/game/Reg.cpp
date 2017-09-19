@@ -21,6 +21,11 @@
 #include "Reg.h"
 #include "CStr.h"
 #include "Directories.h"
+#ifdef __linux__
+#include "Posix/cifm.h"
+#else
+#define CI_FixName(a) a
+#endif
 
 using namespace std;
 
@@ -44,7 +49,7 @@ Registry::~Registry()
 
 void Registry::Read()
 {
-	ifstream fin(sFile.c_str());
+	ifstream fin(CI_FixName(sFile.c_str()));
 	if(fin)
 	{
 		string sLine;
@@ -59,7 +64,7 @@ void Registry::Read()
 
 void Registry::Write()
 {
-	ofstream fout(sFile.c_str());
+	ofstream fout(CI_FixName(sFile.c_str()));
 	if(!fout)
 		throw runtime_error("Could not open registry ini for writing.");
 

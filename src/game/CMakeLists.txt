@@ -83,7 +83,8 @@ IF(WIN32)
   SOURCE_GROUP("win32" FILES ${WIN32_SRCS})
 ELSE()
   SET(POSIX_SRCS
-    "Posix/Directories.cpp" )
+    "Posix/Directories.cpp" 
+    "Posix/cifm.cpp")
 
   SET(GAME_SRCS ${GAME_SRCS} ${POSIX_SRCS})
   SOURCE_GROUP("posix" FILES ${POSIX})

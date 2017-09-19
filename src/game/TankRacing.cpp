@@ -42,6 +42,11 @@
 
 #include "version.h"
 
+#ifdef __linux__
+#include "Posix/cifm.h"
+#define fopen(a, b) ci_fopen(a, b)
+#endif
+
 using namespace std;
 
 TreadMarksVersion GameVersion = {VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_REVISION};
@@ -153,7 +158,7 @@ void CheckGraphics()
 		CTankGame::Get().GetVW()->DownloadTextures();
 	}
 }
-
+#pragma GCC optimize 0
 int main(int argc, char** argv)
 {
 #ifdef QT_CORE_LIB

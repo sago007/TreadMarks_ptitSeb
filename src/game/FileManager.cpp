@@ -23,6 +23,12 @@
 #include <cstring>
 #include <algorithm>
 
+#ifdef __linux__
+#include "Posix/cifm.h"
+#else
+#define CI_FixName(a) a
+#endif
+
 FileManager::FileManager(){
 	f = NULL;
 	SearchDirHead.Data = new CStr;	//Add empty entry to head for searching current dir.
@@ -68,7 +74,7 @@ int FileManager::AddSearchDir(const char *dir){	//Adds a directory to the search
 		char end = dir[strlen(dir) - 1];
 		if(end != '/' && end != '\\') t = CStr(dir) + "/";
 		else t = dir;
-		if(SearchDirHead.AddItem(new CStr(t))) return 1;
+		if(SearchDirHead.AddItem(new CStr(CI_FixName(t)))) return 1;
 	}
 	return 0;
 }
@@ -80,7 +86,12 @@ FILE *FileManager::Open(const char *name){	//The returned pointer is for conveni
 	Close();
 	CStrList *cl = &SearchDirHead;
 	if(name && strlen(name) > 0){
-		while((cl != NULL) && (cl->Data != NULL) && (NULL == (f = ::fopen(*cl->Data + name, "rb")))){
+#ifdef __linux__
+		while((cl != NULL) && (cl->Data != NULL) && (NULL == (f = ::ci_fopen(*cl->Data + name, "rb"))))
+#else
+		while((cl != NULL) && (cl->Data != NULL) && (NULL == (f = ::fopen(*cl->Data + name, "rb"))))
+#endif
+		{
 			cl = cl->NextLink();
 		}
 		if(f){
@@ -100,10 +111,10 @@ FILE *FileManager::OpenWildcard(const char *wild, char *nameret, int namelen, bo
 	findIndex = 0;
 	CStrList *cl = SearchDirHead.NextLink();
 	while(cl && cl->Data){
-		find.AddSearch(*cl->Data + wild, recursive, FilePathOnly(*cl->Data + wild));
+		find.AddSearch(CStr(CI_FixName(*cl->Data)) + wild, recursive, FilePathOnly(CStr(CI_FixName(*cl->Data)) + wild));
 		cl = cl->NextLink();
 	}
-	if(scanbasedir) find.AddSearch(wild, recursive, FilePathOnly(wild));	//Then search base dir.
+	if(scanbasedir) find.AddSearch(CStr(CI_FixName(wild)), recursive, FilePathOnly(CStr(CI_FixName(wild))));	//Then search base dir.
 	//Later, do other stuff for packed file searching.
 	if(find.Items() <= 0) OutputDebugLog("Wildcard had no matches: " + CStr(wild) + "\n");
 	return NextWildcard(nameret, namelen);

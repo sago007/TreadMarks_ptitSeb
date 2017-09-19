@@ -20,6 +20,11 @@
 
 #include <cstring>
 
+#ifdef __linux__
+#include "Posix/cifm.h"
+#else
+#define CI_FixName(a) a
+#endif
 #include <experimental/filesystem>
 #include <regex>
 using namespace std;
@@ -54,10 +59,10 @@ int Find::AddSearch(const char *name, bool recursive, const char *addpath){
 		for(db = strlen(name) - 1; db > 0 && name[db] != '/' && name[db] != '\\' && name[db] != ':'; db--);
 		std::string left(Left(name, db + 1)), right(Mid(name, db + 1));	//Break up path and wildcard.
 		if(left == "") left = "./";
-
+		left = std::string(CI_FixName(left.c_str()));
 		if(is_directory(left))
 		{
-			regex re("[\\\\[\\]()^$|.+]"); // Regular expression to match all special regex chars except * and ?
+			regex re("[\\\\[\\]()^$|.+]", std::regex_constants::icase); // Regular expression to match all special regex chars except * and ?
 			std::string sRightEscaped = regex_replace(right, re, std::string("\\$&"));
 			re = "[*?]";
 			re = regex_replace(sRightEscaped, re, std::string(".$&"));
@@ -73,7 +78,7 @@ int Find::AddSearch(const char *name, bool recursive, const char *addpath){
 				{
 					if(std::regex_match(iter->path().filename().string(), re))
 					{
-						if(ListHead.AddItem(new CStr(CStr(addpath) + iter->path().filename().string().c_str())))
+						if(ListHead.AddItem(new CStr(CStr(CI_FixName(addpath)) + iter->path().filename().string().c_str())))
 						{
 							found++;
 							nItems++;

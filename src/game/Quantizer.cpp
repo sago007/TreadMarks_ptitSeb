@@ -45,6 +45,11 @@
 
 #include "macros.h"
 
+#ifdef __linux__
+#include "Posix/cifm.h"
+#define fopen(a, b) ci_fopen(a, b)
+#endif
+
 #define SQR(a) ((a) * (a))
 
 //#define TEST_CUBE_LERP

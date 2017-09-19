@@ -22,6 +22,11 @@
 #include <cstring>
 #include <cstdlib>
 #include <algorithm>
+#ifdef __linux__
+#include "Posix/cifm.h"
+#else
+#define CI_FixName(a) a
+#endif
 
 using namespace std;
 
@@ -299,7 +304,7 @@ void Sound::SetVoice2D(int voice)
 
 void Sound::StartMusic(const CStr& sFilename)
 {
-	bool bSucceeded = music.openFromFile(sFilename.get());
+	bool bSucceeded = music.openFromFile(CI_FixName(sFilename.get()));
 	music.play();
 }
 
