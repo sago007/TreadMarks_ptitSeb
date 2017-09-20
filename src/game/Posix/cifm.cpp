@@ -38,33 +38,9 @@ void CachePutFirst(int f) {
 }
 
 const char* get_name(const char *name) {
-    if(!name) return name;
-    if(name[0]=='\0') return name;
-    if(strcmp(name,"/")==0) return name;
-    if(ci_FileExists(name)) {
-        //printf("This one is good \"%s\"\n", name);
-        return name;
-    }
-    if(strchr(name, '\\')) {
-        static char tmp2[MAX_PATH];
-        strcpy(tmp2, name);
-        char* p = tmp2;
-        while((p=strchr(p, '\\'))) *p='/';
-        return get_name(tmp2);
-    }
-    if(name[strlen(name)-1]=='/') {
-        static char tmp3[MAX_PATH];
-        strcpy(tmp3, name);
-        tmp3[strlen(name)-1] = '\0';
-        static char tmp4[MAX_PATH];
-        strcpy(tmp4, get_name(tmp3));
-        strcat(tmp4, "/");
-        return tmp4;
-    }
-
-    //printf("Try to fix \"%s\"\n", name);
-
     static int inited = 0;
+    static char* tmp_c[8];
+    static int tmp_i = 0;
     if(!inited) {
         for (int i=0; i<CI_MAX; i++) {
             CacheRepo[i].source = (char*)malloc(MAX_PATH);
@@ -73,8 +49,40 @@ const char* get_name(const char *name) {
             CacheRepo[i].dest[0] ='\0';
             Cache[i] = &CacheRepo[i];
         }
+        for (int i=0; i<8; i++) {
+            tmp_c[i] = (char*)malloc(MAX_PATH);
+            tmp_c[i][0] = '\0';
+        }
         inited = 1;
     }
+
+    if(!name) return name;
+    if(name[0]=='\0') return name;
+    if(strcmp(name,"/")==0) return name;
+    if(ci_FileExists(name)) {
+        //printf("This one is good \"%s\"\n", name);
+        return name;
+    }
+#define TMP(a) char* p##a = tmp_c[tmp_i]; tmp_i=(tmp_i+1)&7
+    if(strchr(name, '\\')) {
+        TMP(1);
+        strcpy(p1, name);
+        char* p = p1;
+        while((p=strchr(p, '\\'))) *p='/';
+        return get_name(p1);
+    }
+    if(name[strlen(name)-1]=='/') {
+        TMP(1);
+        strcpy(p1, name);
+        p1[strlen(name)-1] = '\0';
+        TMP(2);
+        strcpy(p2, get_name(p1));
+        strcat(p2, "/");
+        return p2;
+    }
+
+    //printf("Try to fix \"%s\"\n", name);
+
     // search in repo...
     for (int i=0; i<CI_MAX; i++)
         if(strcasecmp(name, Cache[i]->source)==0)
@@ -100,7 +108,7 @@ const char* get_name(const char *name) {
     // try to find a match for name now
 	DIR *d;
     struct dirent *dir;
-    static char tmp[MAX_PATH];
+    TMP(1);
     d = opendir(new_r?new_r:".");
 	if (d)
 	{
@@ -108,13 +116,13 @@ const char* get_name(const char *name) {
 		{
             if (strcasecmp(dir->d_name, n)==0)
             {
-                strcpy(tmp, new_r?new_r:"");
-                strcat(tmp, new_r?"/":"");
-                strcat(tmp, dir->d_name);
-                if(ci_FileExists(tmp)) {
+                strcpy(p1, new_r?new_r:"");
+                strcat(p1, new_r?"/":"");
+                strcat(p1, dir->d_name);
+                if(ci_FileExists(p1)) {
                     CachePutFirst(CI_MAX-1);
                     strcpy(Cache[0]->source, name);
-                    strcpy(Cache[0]->dest, tmp);
+                    strcpy(Cache[0]->dest, p1);
                     free(r);
                     free(n);
                     closedir(d);
@@ -125,14 +133,14 @@ const char* get_name(const char *name) {
 		closedir(d);
     }
     // build something...
-    strcpy(tmp, new_r?new_r:"");
-    strcat(tmp, new_r?"/":"");
-    strcat(tmp, n);
+    strcpy(p1, new_r?new_r:"");
+    strcat(p1, new_r?"/":"");
+    strcat(p1, n);
 // fail
     free(r);
     free(n);
 
-    return tmp;
+    return p1;
 }
 
 
