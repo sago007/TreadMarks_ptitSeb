@@ -43,6 +43,7 @@
 #include "version.h"
 
 #ifdef __linux__
+#include <locale.h>
 #include "Posix/cifm.h"
 #define fopen(a, b) ci_fopen(a, b)
 #endif
@@ -168,6 +169,9 @@ int main(int argc, char** argv)
 	splash.showMessage("Tread Marks is now loading...", Qt::AlignBottom|Qt::AlignCenter, Qt::white);
 	splash.show();
 	app.processEvents();
+#endif
+#ifdef __linux__
+	setlocale(LC_NUMERIC, "C");
 #endif
 
 	//

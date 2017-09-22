@@ -225,7 +225,7 @@ bool EntityGUIBackground::Think(){
 	EntityGUIBackgroundType *TP = (EntityGUIBackgroundType*)TypePtr;
 	if(TP->texture || TP->type_useenvtexture){
 		float fade = Bias(TP->type_fadebias, TP->type_fade * NiceT());
-		float col = (TP->type_rendflags & SPRITE_BLEND_ADD ? fade : 1.0f);
+		float col = ((TP->type_rendflags & SPRITE_BLEND_ADD) ? fade : 1.0f);
 	//	if(niceremove) fade *= 1.0f - ((float)niceremove / std::max(0.1f, TP->type_removetime * 1000.0f));
 		//
 #ifdef PANDORA
