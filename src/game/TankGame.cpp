@@ -553,20 +553,20 @@ void CTankGame::DoHUD()
 		if(ammoent) Ammo2EntID = ammoent->GID;
 	}
 	if(ammoent){
-		sprintf(tempstr, Text_GetLine(TEXT_WEAPONMAIN));
+		strcpy(tempstr, Text_GetLine(TEXT_WEAPONMAIN));
 		EntityBase *we = VW.GetEntity(PlayerEnt->QueryInt(ATT_WEAPON_ENTITY));
 		if(we){
 			// FIXME: check length
 			weaponammo = we->QueryInt(ATT_WEAPON_AMMO) * we->QueryInt(ATT_WEAPON_MULT);
 			if(we->TypePtr->nameid != -1) {
 				// Russ: New way, 'nameid' in ENT is an index into Names.TXT for localised names
-				sprintf(tempstr, Names.Get(we->TypePtr->nameid) );
+				strcpy(tempstr, Names.Get(we->TypePtr->nameid) );
 			} else {
 				// Russ: Old way, should only be used for debugging and for mods
 				if (we->TypePtr->dname.len() > 250) {
 					sprintf(tempstr, "FIXME!");
 				} else {
-					sprintf(tempstr, we->TypePtr->dname.get());
+					strcpy(tempstr, we->TypePtr->dname.get());
 				}
 			}
 		}

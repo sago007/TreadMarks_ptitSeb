@@ -1789,14 +1789,14 @@ bool VoxelWorld::AppendEntities(IFF *iff){
 		int EntityVersion = iff->ReadLong();
 		int NumEnts = iff->ReadLong();
 		for(i = 0; i < NumEnts; i++){
-			iff->ReadBytes((uchar*)eclass, iff->ReadLong()); iff->Even();
-			iff->ReadBytes((uchar*)etype, iff->ReadLong()); iff->Even();
+			iff->ReadBytes((uint8_t*)eclass, iff->ReadLong()); iff->Even();
+			iff->ReadBytes((uint8_t*)etype, iff->ReadLong()); iff->Even();
 			for(j = 0; j < 3; j++) Pos[j] = iff->ReadFloat();
 			for(j = 0; j < 3; j++) Rot[j] = iff->ReadFloat();
 			for(j = 0; j < 3; j++) Vel[j] = iff->ReadFloat();
 			id = iff->ReadLong();
 			flags = iff->ReadLong();
-			iff->ReadBytes((uchar*)buf, iff->ReadLong());	//Placeholder for variable length entity specific data.
+			iff->ReadBytes((uint8_t*)buf, iff->ReadLong());	//Placeholder for variable length entity specific data.
 			//
 			if(mirrored){
 				Pos[2] = (-(Pos[2] - worldcenter[2])) + worldcenter[2];	//Mirror about horizontal center of world.
@@ -1824,9 +1824,9 @@ bool VoxelWorld::SaveEntities(IFF *iff){
 			while(ent){
 				if(et = ent->TypePtr){	//Write class and type names.
 					iff->WriteLong(et->cname.len() + 1);
-					iff->WriteBytes((uchar*)et->cname.get(), et->cname.len() + 1); iff->Even();
+					iff->WriteBytes((uint8_t*)et->cname.get(), et->cname.len() + 1); iff->Even();
 					iff->WriteLong(et->tname.len() + 1);
-					iff->WriteBytes((uchar*)et->tname.get(), et->tname.len() + 1); iff->Even();
+					iff->WriteBytes((uint8_t*)et->tname.get(), et->tname.len() + 1); iff->Even();
 				}else{	//Just in case...  Write length of one null strings.
 					iff->WriteLong(1); iff->WriteByte(0); iff->Even();
 					iff->WriteLong(1); iff->WriteByte(0); iff->Even();

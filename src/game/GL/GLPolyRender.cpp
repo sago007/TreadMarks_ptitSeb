@@ -57,7 +57,7 @@ void GLPolyRender::GLBlendMode(int mode){
 		blendmode = mode;
 	}
 }
-void GLPolyRender::GLBindTexture(unsigned int id){
+void GLPolyRender::GLBindTexture(uint32_t id){
 	if(id != boundtex || texunbound){
 		glBindTexture(GL_TEXTURE_2D, id);
 		boundtex = id;
@@ -623,7 +623,7 @@ void GLPolyRender::GLRenderStringObject(StringObject *thisstring, PolyRender *PR
 			glBegin(GL_QUADS);
 			glColor4fv(c);
 			for(int n = 0; n < thisstring->nGlyph; n++){
-				unsigned char g = thisstring->Glyph[n];
+				uint8_t g = thisstring->Glyph[n];
 				float gx = (float)(g & (thisstring->CharsX - 1)) * gw;
 				float gy = (float)(g / thisstring->CharsX) * gh;
 				glTexCoord2f(gx, gy);
@@ -1090,7 +1090,7 @@ bool ResourceManager::DownloadTextures(bool UpdateOnly){
 								rgba[i].byte[3] = av;
 								for(int b = 0; b < 3; b++){
 									int t = (((int)rgba[i].byte[b] * rav) >>8);
-									rgba[i].byte[b] = (unsigned char)std::min(255, t);
+									rgba[i].byte[b] = (uint8_t)std::min(255, t);
 								}
 								//Okay, NOW we're doing it properly, inversly scaling up the color channel
 								//by 1 / alpha so that when we put the image over a color on the screen, we
@@ -1107,7 +1107,7 @@ bool ResourceManager::DownloadTextures(bool UpdateOnly){
 				}
 			//	format = 4;
 				if((*node)[m].BPP() > 8){	//Handle 24/32bit bitmap in BGR or BGRA format.
-					unsigned char *src, *dst, alpha = ((*node)[m].BPP() == 32 ? 1 : 0);
+					uint8_t *src, *dst, alpha = ((*node)[m].BPP() == 32 ? 1 : 0);
 					for(int y = 0; y < tbmp.Height(); y++){
 						src = (*node)[m].Data() + y * (*node)[m].Pitch();
 						dst = tbmp.Data() + y * tbmp.Pitch();
@@ -1130,8 +1130,8 @@ bool ResourceManager::DownloadTextures(bool UpdateOnly){
 					//
 					if(node->Trans){	//Special hack for binary transparent images, to smush color into trans pixels to help bilerping.
 						for(int y = 0; y < tbmp.Height() - 1; y++){
-							unsigned char *src = (unsigned char*)(*node)[m].Data() + (*node)[m].Pitch() * y;
-							unsigned char *dst = (unsigned char*)tbmp.Data() + tbmp.Pitch() * y;
+							uint8_t *src = (uint8_t*)(*node)[m].Data() + (*node)[m].Pitch() * y;
+							uint8_t *dst = (uint8_t*)tbmp.Data() + tbmp.Pitch() * y;
 							int spitch = (*node)[m].Pitch();
 							int dpitch = tbmp.Pitch();
 							for(int x = tbmp.Width() - 1; x; x--){	//Skip right and bottom rows!!!
@@ -1160,7 +1160,7 @@ bool ResourceManager::DownloadTextures(bool UpdateOnly){
 						}
 					}
 				}
-			//	if((*node)[m].BlitRaw8to32((unsigned long*)tbmp.Data(), tbmp.Pitch(), 0, 0, tbmp.Width(), tbmp.Height(), false, rgba)){
+			//	if((*node)[m].BlitRaw8to32((uint32_t*)tbmp.Data(), tbmp.Pitch(), 0, 0, tbmp.Width(), tbmp.Height(), false, rgba)){
 //				tbmp.GammaCorrect(1.8f);
 				glBindTexture(GL_TEXTURE_2D, (*node)[m].id);
 				//
@@ -1242,8 +1242,8 @@ int GLMipMap(Bitmap *bmp, int fmt, int trans, int maxres, int blackoutx, int bla
 							memset(alphaaccum, 0, sizeof(alphaaccum));
 							memset(alphacount, 0, sizeof(alphacount));
 							for(int y = 0; y < tbmp1.Height(); y++){
-								unsigned char *p1 = (unsigned char*)tbmp1.Data() + y * tbmp1.Pitch();
-								unsigned char *p2 = (unsigned char*)tbmp8.Data() + y * tbmp8.Pitch();
+								uint8_t *p1 = (uint8_t*)tbmp1.Data() + y * tbmp1.Pitch();
+								uint8_t *p2 = (uint8_t*)tbmp8.Data() + y * tbmp8.Pitch();
 								for(int x = tbmp1.Width(); x; x--){
 									alphaaccum[*p2] += p1[3];
 									alphacount[*p2] += 1;
@@ -1251,12 +1251,12 @@ int GLMipMap(Bitmap *bmp, int fmt, int trans, int maxres, int blackoutx, int bla
 									p2 += 1;
 								}
 							}
-							unsigned char pal[256][4];
+							uint8_t pal[256][4];
 							for(int i = 0; i < 256; i++){
 								pal[i][0] = tbmp8.pe[i].peRed;
 								pal[i][1] = tbmp8.pe[i].peGreen;
 								pal[i][2] = tbmp8.pe[i].peBlue;
-								pal[i][3] = (unsigned char)(alphaaccum[i] / std::max(1, alphacount[i]));
+								pal[i][3] = (uint8_t)(alphaaccum[i] / std::max(1, alphacount[i]));
 							}
 							glTexImage2D(GL_TEXTURE_2D, level, GL_R3_G3_B2, tbmp1.Width(), tbmp1.Height(), 0,
 								GL_RGBA, GL_UNSIGNED_BYTE, tbmp1.Data());
@@ -1294,15 +1294,15 @@ int GLMipMap(Bitmap *bmp, int fmt, int trans, int maxres, int blackoutx, int bla
 			if(tbmp2.Init(w, h, 32) && tbmp2.Data() && tbmp2.Width() == tbmp1.Width() / 2 && tbmp2.Height() == tbmp1.Height() / 2){
 				//
 				//Make a Gain table, trying something out...
-			//	unsigned char gaintab[256];
+			//	uint8_t gaintab[256];
 			//	for(int i = 0; i < 256; i++){
 			//		gaintab[i] = (int)(Gain(0.8f, (float)i / 256.0f) * 255.0f);
 			//	}
 				//
 				int x, y;
 				for(y = 0; y < h; y++){
-					unsigned char *ts = tbmp1.Data() + (y * 2) * tbmp1.Pitch();
-					unsigned char *td = tbmp2.Data() + y * tbmp2.Pitch();
+					uint8_t *ts = tbmp1.Data() + (y * 2) * tbmp1.Pitch();
+					uint8_t *td = tbmp2.Data() + y * tbmp2.Pitch();
 					for(x = w; x; x--){
 						//Maximum filter.
 					//	int pp = tbmp1.Pitch();
@@ -1322,7 +1322,7 @@ int GLMipMap(Bitmap *bmp, int fmt, int trans, int maxres, int blackoutx, int bla
 					//	}
 						for(int p = 0; p < 4; p++){
 							//Gain filter.
-						//	td[p] = gaintab[(unsigned char)((((int)ts[p]) + (int)ts[p + 4] +
+						//	td[p] = gaintab[(uint8_t)((((int)ts[p]) + (int)ts[p + 4] +
 						//		(int)ts[p + tbmp1.Pitch()] + (int)ts[p + 4 + tbmp1.Pitch()]) >>2)];
 							//Uneven box filter 2.
 							td[p] = (((int)ts[p] <<2) + (int)ts[p + 4] +
@@ -1344,13 +1344,13 @@ int GLMipMap(Bitmap *bmp, int fmt, int trans, int maxres, int blackoutx, int bla
 					int ymask = (1 << HiBit(h / blackouty)) - 1;
 					for(y = 0; y < h; y++){	//Horizontal lines.
 						if((y & ymask) == 0 || (y & ymask) == ymask){
-							unsigned char *td = tbmp2.Data() + y * tbmp2.Pitch();
+							uint8_t *td = tbmp2.Data() + y * tbmp2.Pitch();
 							for(x = 0; x < (w <<2); x++) *td++ = 0;
 						}
 					}
 					for(x = 0; x < w; x++){	//Vertical lines.
 						if((x & xmask) == 0 || (x & xmask) == xmask){
-							unsigned char *td = tbmp2.Data() + x * 4;
+							uint8_t *td = tbmp2.Data() + x * 4;
 							for(y = 0; y < h; y++){
 								for(int p = 0; p < 4; p++) td[p] = 0;
 								td += tbmp2.Pitch();
@@ -1367,11 +1367,11 @@ int GLMipMap(Bitmap *bmp, int fmt, int trans, int maxres, int blackoutx, int bla
 }
 
 //These are the good pass-through functions.
-int GLGenTextures(int n, unsigned int *a){
+int GLGenTextures(int n, uint32_t *a){
 	glGenTextures(n, a);
 	return n;
 }
-int GLDeleteTextures(int n, unsigned int *a){
+int GLDeleteTextures(int n, uint32_t *a){
 	glDeleteTextures(n, a);
 	return n;
 }
@@ -1383,7 +1383,7 @@ char TextureNames[MAX_TEX_NAMES];
 int TextureNamesInitialized = 0;
 int TextureNameSearchFrom = 0;
 //
-int GLGenTextures(int n, unsigned int *a){
+int GLGenTextures(int n, uint32_t *a){
 	//
 	static foo = 1;
 	for(int t = 0; t < n; t++) a[t] = foo++;
@@ -1410,7 +1410,7 @@ int GLGenTextures(int n, unsigned int *a){
 	}
 	return n;
 }
-int GLDeleteTextures(int n, unsigned int *a){
+int GLDeleteTextures(int n, uint32_t *a){
 	//
 	return n;
 	//

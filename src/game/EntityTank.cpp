@@ -565,7 +565,7 @@ bool EntityTankGod::SetInt(int type, int attr){
 					if (weapon) {
 						sprintf(msg, Text_GetLine(TEXT_KILLSELF), mweapon.get());
 					} else {
-						sprintf(msg, Text_GetLine(TEXT_KILLSELFSUICIDE));
+						strcpy(msg, Text_GetLine(TEXT_KILLSELFSUICIDE));
 					}
 				} else if (killee) {
 					pri = 5;
@@ -2695,7 +2695,7 @@ bool EntitySpewer::Think(){
 				AddVec3(Position, TP->type_launchcoords, tv);
 				//
 				EntityProjectile::SetCurrentOwner(curowner);	//This is so if a projectile creates us, any projectiles we create will have same tank owner id.
-				VW->AddEntity("", TP->type_spewtype[type], tv, Rotation, vel, 0, 0, 0, (TP->type_propagatespew ? ADDENTITY_FORCENET : NULL));
+				VW->AddEntity("", TP->type_spewtype[type], tv, Rotation, vel, 0, 0, 0, (TP->type_propagatespew ? ADDENTITY_FORCENET : 0));
 				EntityProjectile::SetCurrentOwner(0);
 				//
 				lastspewtime = VW->Time();

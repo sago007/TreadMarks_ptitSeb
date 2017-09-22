@@ -20,6 +20,7 @@
 #define FILEMANAGER_H
 
 #include <cstdio>
+#include <cstdint>
 #include "CStr.h"
 #include "Find.h"
 
@@ -34,11 +35,11 @@ private:
 	CStrList SearchDirHead;
 	CStrList PackedFileHead;
 	CStr FileName;
-	unsigned long FileOffset;
+	size_t FileOffset;
 	//
 	FILE *FileStack[FILE_STACK_SIZE];
 	CStr FileNameStack[FILE_STACK_SIZE];
-	unsigned long FileOffsetStack[FILE_STACK_SIZE];
+	size_t FileOffsetStack[FILE_STACK_SIZE];
 	int nFileStack;
 public:
 	//Access members.
@@ -58,14 +59,14 @@ public:
 	bool PopFile();	//Returns true if file stack was successfully popped, false if stack is at bottom.
 	//
 	CStr GetFileName();
-	unsigned long GetFileOffset();	//These are for external routines that MUST open a file via name and offset.
+	size_t GetFileOffset();	//These are for external routines that MUST open a file via name and offset.
 	void Close();
 	//These work on the currently opened file, either physical or in pack.
 	size_t fread(void *buf, size_t size, size_t count);
 	int fseek(long offset, int origin);
-	long ftell();
-	long length();	//Returns the length in bytes of currently opened file.
-	long ReadLong();
+	size_t ftell();
+	size_t length();	//Returns the length in bytes of currently opened file.
+	int32_t ReadLong();
 	char ReadByte();
 };
 

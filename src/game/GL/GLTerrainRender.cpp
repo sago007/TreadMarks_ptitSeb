@@ -205,10 +205,10 @@ static LodTree *lod = 0;
 static float variance = 0.0f;
 
 //NOTE: This function, normally, ROUNDS TO NEAREST!!!
-inline long FloatToLong(float f) { // relies on IEEE format for float
+inline int32_t FloatToLong(float f) { // relies on IEEE format for float
 	f += -0.499999f;	//This change makes it CHOP TO LOWER!!
 	f += (3 << 22);
-	return ((*(long*)&f)&0x007fffff) - 0x00400000;
+	return ((*(int32_t*)&f)&0x007fffff) - 0x00400000;
 }
 
 void BinaryTriangle::TestSplitZ(int level, int index, float cz1, float cz2, float cz3){
@@ -337,19 +337,19 @@ void BinaryTriangle::TestSplitClip(int level, int index, float radius, int x1, i
 
 //A section of world for rendering, may point to wrapped terrain off-map.
 struct MapPatch{
-	int x, y;	//Coordinates in patch grid.
-	unsigned int id;
+	int32_t x, y;	//Coordinates in patch grid.
+	uint32_t id;
 	BinaryTriangle ul, dr;
 	LodTree *lodul, *loddr;
 	MapPatch() : x(0), y(0), id(0) {
 		ul.Null(); ul.BottomNeighbor = &dr;	//Links component root bintris together at bottoms.
 		dr.Null(); dr.BottomNeighbor = &ul;
 	};
-	MapPatch(int X, int Y, unsigned int ID) : x(X), y(Y), id(ID) {
+	MapPatch(int32_t X, int32_t Y, uint32_t ID) : x(X), y(Y), id(ID) {
 		ul.Null(); ul.BottomNeighbor = &dr;	//Links component root bintris together at bottoms.
 		dr.Null(); dr.BottomNeighbor = &ul;
 	};
-	void SetCoords(int X, int Y, unsigned int ID){
+	void SetCoords(int32_t X, int32_t Y, uint32_t ID){
 		x = X;
 		y = Y;
 		id = ID;
@@ -548,7 +548,7 @@ bool GLRenderEngine::GLTerrainRender(Terrain *map, Camera *cam, int flags, float
 	}
 	//
 	//Align bintripool on 32byte boundary
-	BinTriPool = (BinaryTriangle*)((((unsigned long)RealBinTriPool) + 31) & (~31));
+	BinTriPool = (BinaryTriangle*)((((uintptr_t)RealBinTriPool) + 31) & (~31));
 	//
 	msecs += ms;
 	//

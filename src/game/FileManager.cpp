@@ -133,7 +133,7 @@ FILE *FileManager::GetFile(){
 CStr FileManager::GetFileName(){
 	return FileName;
 }
-unsigned long FileManager::GetFileOffset(){
+size_t FileManager::GetFileOffset(){
 	return FileOffset;
 }
 void FileManager::Close(){
@@ -151,12 +151,12 @@ int FileManager::fseek(long offset, int origin){
 	if(f) return ::fseek(f, offset, origin);
 	return 0;
 }
-long FileManager::ftell(){
+size_t FileManager::ftell(){
 	if(f) return ::ftell(f);
 	return 0;
 }
-long FileManager::length(){
-	long pos, len = 0;
+size_t FileManager::length(){
+	size_t pos, len = 0;
 	if(f){
 		if(false){
 			//Do special case for packed file here.
@@ -169,8 +169,8 @@ long FileManager::length(){
 	}
 	return len;
 }
-long FileManager::ReadLong(){
-	long l = 0;
+int32_t FileManager::ReadLong(){
+	int32_t l = 0;
 	if(f) ::fread(&l, sizeof(l), 1, f);
 	return l;
 }

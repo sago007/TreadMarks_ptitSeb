@@ -275,7 +275,7 @@ class ConfigFileList : public ConfigFile, public LinklistBase<ConfigFileList> {
 public:
 	CStr cname, tname;
 	ClassHash thash;
-	unsigned int ClientChecksum[MAX_CLIENTS];	//For use on server, for checksum replies returned from clients.  Must match to not have to send back config data.
+	uint32_t ClientChecksum[MAX_CLIENTS];	//For use on server, for checksum replies returned from clients.  Must match to not have to send back config data.
 	int ServerSynch;	//Should the server check checksums on this entity type and send to clients?  (No, for meaningless entities such as GUI.)
 	ConfigFileList(){
 		for(int i = 0; i < MAX_CLIENTS; i++) ClientChecksum[i] = 0;
@@ -424,9 +424,9 @@ public:
 	//
 public:
 	void PulseNetwork(PacketProcessorCallback *usercallback = NULL);
-	bool BeginClientConnect(const char *address, short serverport, short clientport, EntityTypeBase *enttype, const char *clientname, int clientrate);
+	bool BeginClientConnect(const char *address, int16_t serverport, int16_t clientport, EntityTypeBase *enttype, const char *clientname, int clientrate);
 	ClientStatus GetStatus(){ return Status; };
-	bool InitServer(short port, int maxclients);
+	bool InitServer(int16_t port, int maxclients);
 	bool SendClientInfo(EntityTypeBase *enttype = NULL, const char *clientname = NULL, int clientrate = 0);	//Resends client entity type, name, and/or rate to server.
 	int CountClients();
 private:
@@ -437,9 +437,9 @@ public:
 #define STATUS_PRI_PLAYER	1
 #define STATUS_PRI_CHAT		2
 #define STATUS_PRI_NETWORK	3
-	bool StatusMessage(const char *text, int pri = 0, ClientID dest = CLIENTID_BROADCAST, unsigned int teamid = TEAMID_NONE, bool localdisplay = true);
+	bool StatusMessage(const char *text, int pri = 0, ClientID dest = CLIENTID_BROADCAST, uint32_t teamid = TEAMID_NONE, bool localdisplay = true);
 		//Tells the local GOD entity to display a status message, and optionally sends to clients if on server.
-	int ChatMessage(const char *text, unsigned int teamid = TEAMID_NONE);	//Sends a chat message to the server, who sends it on to clients.
+	int ChatMessage(const char *text, uint32_t teamid = TEAMID_NONE);	//Sends a chat message to the server, who sends it on to clients.
 public:
 	VoxelWorld();
 	~VoxelWorld();
@@ -520,18 +520,18 @@ public:
 		//which might make things easier on the map editor.
 private:
 	bool ForceGroup;
-	unsigned long msec;	//Time stamp for global think.
-	signed long msecdiff;	//When client, difference from current client clock to get server clock.
+	uint32_t msec;	//Time stamp for global think.
+	int32_t msecdiff;	//When client, difference from current client clock to get server clock.
 	int vmsec;	//Time since last global think ("length" of this think).
 	float ffrac;
 #define MSDIFF_HISTORY 16
-	signed long msecdiffa[MSDIFF_HISTORY];
+	int32_t msecdiffa[MSDIFF_HISTORY];
 	int msecdiffan;
 	//
 #define SYNCH_EVERY 100
-	unsigned long lastsynch;
+	uint32_t lastsynch;
 #define PING_EVERY 1000
-	unsigned long lastping;
+	uint32_t lastping;
 	//
 	int gamemode;
 	//

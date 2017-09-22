@@ -25,7 +25,7 @@
 
 void Terrain::UndownloadTextures(){
 	if(TexIDs[0][0] != 0){
-		GLDeleteTextures(TEXIDSIZE * TEXIDSIZE, (unsigned int*)TexIDs);
+		GLDeleteTextures(TEXIDSIZE * TEXIDSIZE, (uint32_t*)TexIDs);
 		memset(TexIDs, 0, TEXIDSIZE * TEXIDSIZE * 4);
 	}
 }
@@ -66,7 +66,7 @@ bool Terrain::DownloadTextures(){
 		}
 		GLGenTextures(TEXIDSIZE * TEXIDSIZE, (GLuint*)TexIDs);
 		//First patch seams by copying neighboring data.
-		unsigned long *tdd, *tds;
+		uint32_t *tdd, *tds;
 		for(y = 0; y < h; y += TexSize){	//Horizontal lines.
 			tdd = data32 + y * w;
 			tds = data32 + ((y - 1) & (h - 1)) * w;
@@ -159,7 +159,7 @@ int Terrain::UpdateTextures(int x1, int y1, int w, int h){
 
 int Terrain::Redownload(int px, int py){
 	if(!data32) return 0;
-	static unsigned long tbuf[TexSize * TexSize];
+	static uint32_t tbuf[TexSize * TexSize];
 	int tpw = Width() / TexSize, tph = Height() / TexSize;
 	//
 	GLuint id = TexIDs[px & (tpw - 1)][py & (tph - 1)];
@@ -172,7 +172,7 @@ int Terrain::Redownload(int px, int py){
 		if(br.h & 1) br.h++;
 		//
 		glBindTexture(GL_TEXTURE_2D, id);
-		unsigned char *ts, *td = (unsigned char*)tbuf;
+		uint8_t *ts, *td = (uint8_t*)tbuf;
 		int xs = (px & (tpw - 1)) * TexSize + br.x;
 		int ys = (py & (tph - 1)) * TexSize + br.y;
 		//
@@ -193,12 +193,12 @@ int Terrain::Redownload(int px, int py){
 			}
 		}
 		//
-		ts = (unsigned char*)(data32 + ys * Width() + xs);
+		ts = (uint8_t*)(data32 + ys * Width() + xs);
 		for(int y = ys; y < ys + br.h; y++){
-		//	memcpy(td, ts, ((unsigned int)br.w) <<2);
-			for(int t = 0; t < ((unsigned int)br.w); t++) ((unsigned long*)td)[t] = ((unsigned long*)ts)[t];
+		//	memcpy(td, ts, ((uint32_t)br.w) <<2);
+			for(int t = 0; t < ((uint32_t)br.w); t++) ((uint32_t*)td)[t] = ((uint32_t*)ts)[t];
 			ts += Width() <<2;
-			td += ((unsigned int)br.w) <<2;
+			td += ((uint32_t)br.w) <<2;
 		}
 		glTexSubImage2D(GL_TEXTURE_2D, 0, br.x, br.y, br.w, br.h,
 			GL_RGBA, GL_UNSIGNED_BYTE, tbuf);

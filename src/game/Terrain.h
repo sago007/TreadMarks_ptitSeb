@@ -94,9 +94,9 @@ public:
 #define MAX_LOD_BUMP 1000
 #define TEXIDSIZE 32
 struct ByteRect{
-	unsigned char x, y, w, h;
+	uint8_t x, y, w, h;
 	ByteRect() : x(0), y(0), w(0), h(0) {};
-	ByteRect(unsigned char X, unsigned char Y, unsigned char W, unsigned char H) : x(X), y(Y), w(W), h(H) {};
+	ByteRect(uint8_t X, uint8_t Y, uint8_t W, uint8_t H) : x(X), y(Y), w(W), h(H) {};
 };
 //
 class Terrain{
@@ -115,7 +115,7 @@ protected:	//OpenGl again.
 //	int LodBump[MAX_LOD_BUMP][2];	//Which LOD cells should have their detail bumped up?
 //	int nLodBump;
 public:	//ick...  public...
-	unsigned int TexIDs[TEXIDSIZE][TEXIDSIZE];
+	uint32_t TexIDs[TEXIDSIZE][TEXIDSIZE];
 	ByteRect TexDirty[TEXIDSIZE][TEXIDSIZE];
 	int Redownload(int tx, int ty);
 	//
@@ -125,25 +125,25 @@ protected:
 	Quantizer TerrainQuant;
 	int PalTextures;
 protected:
-//	unsigned char	*hdata;		//Height data
-//	unsigned char	*cdata;		//Color data
-	unsigned short	*data;	//Storage for height and color data interleaved.
-	unsigned char	*texid;	//TextureID number map.
+//	uint8_t	*hdata;		//Height data
+//	uint8_t	*cdata;		//Color data
+	uint16_t	*data;	//Storage for height and color data interleaved.
+	uint8_t	*texid;	//TextureID number map.
 	int		width;
 	int		height;
 	int		widthmask;
 	int		heightmask;
 	int		widthpow;
 	int		heightpow;
-	unsigned char	ShadeLookup[256][NUM_SHADE];
-	unsigned char	ShadeLookup32[256][NUM_SHADE];
+	uint8_t	ShadeLookup[256][NUM_SHADE];
+	uint8_t	ShadeLookup32[256][NUM_SHADE];
 //	int		SqrtLookup[NUM_SQRT];
 	float	LightX, LightY, LightZ;	//Vector TOWARDS global sun, in +Z = forwards coords.
 	float	Ambient;
 	int		ScorchTex;
 public:
-	unsigned long	*data32;
-//	unsigned long	*ShadeLookup32;
+	uint32_t	*data32;
+//	uint32_t	*ShadeLookup32;
 public:
 	void RotateEdges();	//Rotates edges into center or vice versa for painting wrappability.
 	Terrain();
@@ -158,7 +158,7 @@ public:
 	bool Save(const char *name, EcoSystem *eco, int numeco);
 	//
 	void SetLightVector(float lx, float ly, float lz, float amb = 0.25f);
-	int ClearCMap(unsigned char val);
+	int ClearCMap(uint8_t val);
 	void SetScorchEco(int eco = -1);	//Sets an eco system to use as the Scorch texture, instead of black.
 	int GetScorchEco();
 	//
@@ -166,9 +166,9 @@ public:
 	bool InitTextureID();
 	int EcoTexture(EcoSystem *eco, int numeco, int x, int y);	//EcoSystems the TexID for a specific point.
 	bool Texture(EcoSystem *eco, int numeco, bool UseIDMap = false, int x1 = 0, int y1 = 0, int x2 = 0, int y2 = 0);
-	bool RemapTexID(unsigned char *remap);	//256 entry remapping table.
+	bool RemapTexID(uint8_t *remap);	//256 entry remapping table.
 	bool Lightsource(int x1 = 0, int y1 = 0, int x2 = 0, int y2 = 0);
-	int Blow(unsigned char *dest, int dw, int dh, int dp,
+	int Blow(uint8_t *dest, int dw, int dh, int dp,
 		int sx = 0, int sy = 0, int sx2 = 0, int sy2 = 0, int flag = 0, int destbpp = 8, PaletteEntry pe[256] = NULL);
 		//sx, sy, sx2, sy2 offsets are used to blit a specific rectangle of the map data to
 		//the dest surface.  THE TOP LEFT OF THE MAP IS STILL EQUAL TO THE TOP LEFT OF THE
@@ -184,9 +184,9 @@ public:
 	int WrapY(int y) {return y & heightmask;}
 	//
 #define CALCIDX(x, y) (((x) & widthmask) + (((y) & heightmask) << widthpow))
-	int GetRGB(int x, int y, unsigned char *r, unsigned char *g, unsigned char *b){
+	int GetRGB(int x, int y, uint8_t *r, uint8_t *g, uint8_t *b){
 		if(data32){
-			unsigned char *t = (unsigned char*)(data32 + CALCIDX(x, y));
+			uint8_t *t = (uint8_t*)(data32 + CALCIDX(x, y));
 			*r = t[0];
 			*g = t[1];
 			*b = t[2];
@@ -194,28 +194,28 @@ public:
 		}
 		return 0;
 	}
-	void PutRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b){
+	void PutRGB(int x, int y, uint8_t r, uint8_t g, uint8_t b){
 		if(data32){
-			unsigned char *t = (unsigned char*)(data32 + CALCIDX(x, y));
+			uint8_t *t = (uint8_t*)(data32 + CALCIDX(x, y));
 			t[0] = r;
 			t[1] = g;
 			t[2] = b;
 		}
 	}
-	unsigned char GetT(int x, int y){
+	uint8_t GetT(int x, int y){
 	//	if(texid == NULL || x < 0 || y < 0 || x >= width || y >= height) return 0;
 	//	return *(texid + x + y * width); };
 		if(!texid) return 0;
 		return *(texid + CALCIDX(x,y));
 	};
-	unsigned char GetTraw(int x, int y){
+	uint8_t GetTraw(int x, int y){
 		return *(texid + x + (y <<widthpow)); };
 	//	return *(texid + x + y * width); };
-	unsigned char GetTwrap(int x, int y){
+	uint8_t GetTwrap(int x, int y){
 		if(!texid) return 0;
 		return *(texid + CALCIDX(x,y));
 	};
-	unsigned char GetH(int x, int y){
+	uint8_t GetH(int x, int y){
 	//	if(data == NULL || x < 0 || y < 0 || x >= width || y >= height) return 0;
 	//	return *(data + x + y * width) >> 8; };
 		if(!data) return 0;
@@ -223,23 +223,23 @@ public:
 	};
 		//Oops, already had a seperate wrapping GetH...  Hmm...
 		//This'll need to be straightened out at some point.
-	unsigned char GetHraw(int x, int y){
-		return *((unsigned char*)data + ((x + (y <<widthpow)) <<1) + 1); };
+	uint8_t GetHraw(int x, int y){
+		return *((uint8_t*)data + ((x + (y <<widthpow)) <<1) + 1); };
 	//	return *(data + x + y * width) >> 8; };
-	unsigned char GetHwrap(int x, int y){
+	uint8_t GetHwrap(int x, int y){
 	//	return *(data + (x & widthmask) + ((y & heightmask) <<widthpow)) >> 8; };
 		if(!data) return 0;
-		return *((unsigned char*)data + (CALCIDX(x, y) <<1) + 1); };
-	unsigned short GetBigH(int x, int y);
-	unsigned char GetC(int x, int y){
+		return *((uint8_t*)data + (CALCIDX(x, y) <<1) + 1); };
+	uint16_t GetBigH(int x, int y);
+	uint8_t GetC(int x, int y){
 		if(data == NULL || x < 0 || y < 0 || x >= width || y >= height) return 0;
 		return *(data + x + y * width) & 0xff; };
-	unsigned char GetCraw(int x, int y){
-		return *((unsigned char*)data + ((x + (y <<widthpow)) <<1)); };
-	unsigned char GetCwrap(int x, int y){
+	uint8_t GetCraw(int x, int y){
+		return *((uint8_t*)data + ((x + (y <<widthpow)) <<1)); };
+	uint8_t GetCwrap(int x, int y){
 	//	return *(data + CALCIDX(x, y)) & 0xff; };
 		if(!data) return 0;
-		return *((unsigned char*)data + (CALCIDX(x, y) <<1)); };
+		return *((uint8_t*)data + (CALCIDX(x, y) <<1)); };
 //	bool SetH(int x, int y, UCHAR v){
 //		if(data == NULL || x < 0 || y < 0 || x >= width || y >= height) return false;
 //		*(data + x + y * width) = GetC(x, y) | (v << 8);  return true; }
@@ -259,17 +259,17 @@ public:
 	void SetHwrap(int x, int y, int v){
 		if(!data) return;
 	//	*(data + CALCIDX(x, y)) = GetCwrap(x, y) | ((v > 255 ? 255 : (v < 0 ? 0 : v)) << 8); };
-		*((unsigned char*)data + (CALCIDX(x, y) <<1) + 1) = ((v > 255 ? 255 : (v < 0 ? 0 : v))); };
+		*((uint8_t*)data + (CALCIDX(x, y) <<1) + 1) = ((v > 255 ? 255 : (v < 0 ? 0 : v))); };
 		//
-	bool SetBigH(int x, int y, unsigned short v);
-	bool SetC(int x, int y, unsigned char v){
+	bool SetBigH(int x, int y, uint16_t v);
+	bool SetC(int x, int y, uint8_t v){
 		if(data == NULL || x < 0 || y < 0 || x >= width || y >= height) return false;
 		*(data + x + y * width) = (GetH(x, y) << 8) | v;  return true; };
-	bool SetCraw(int x, int y, unsigned char v){
+	bool SetCraw(int x, int y, uint8_t v){
 		*(data + x + y * width) = (GetHraw(x, y) << 8) | v;  return true; };
-	void SetCwrap(int x, int y, unsigned char v){
+	void SetCwrap(int x, int y, uint8_t v){
 		if(!data) return;
-		*((unsigned char*)data + (CALCIDX(x, y) <<1)) = v; };
+		*((uint8_t*)data + (CALCIDX(x, y) <<1)) = v; };
 		//
 	int GetI(int x, int y);	//Get an interpolated height, passing in FP x,y and getting back VP sized voxel height data.
 	float FGetI(float x, float y);	//Get an interpolated height, passing in FP x,y and getting back VP sized voxel height data.

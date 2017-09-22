@@ -66,6 +66,7 @@ float fsqrt_inv(float f)
 }
 */
 // same as above but in assembly
+#if 0
 #ifdef WIN32
 	__declspec(naked) float CDECL fsqrt_inv(float f)
 	{
@@ -102,4 +103,10 @@ float fsqrt_inv(float f)
 	 y = 1.5f*y - (x2*y * y*y);
 	 return y;
 	}
+#endif
+#else
+float fsqrt_inv(float f)
+{
+	return 1.0f/sqrtf(f);
+}
 #endif

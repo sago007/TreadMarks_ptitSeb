@@ -23,7 +23,9 @@
 #define _SOUND_H_
 
 //Disable exceptions not enabled warnings.
+#ifndef __linux__
 #pragma warning( disable : 4530 )
+#endif
 
 #include <new>
 #include <iostream>

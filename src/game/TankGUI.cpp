@@ -2404,9 +2404,9 @@ void DoGraphicsOptions()
 		tempstr, BID_Res);  AddVec3(L, V);
 
 	if (CTankGame::Get().GetSettings()->GraphicsSettings.UseFullScreen) {
-		sprintf(tempstr, Text.Get(TEXT_GRAPHICSFULL));
+		strcpy(tempstr, Text.Get(TEXT_GRAPHICSFULL));
 	} else {
-		sprintf(tempstr, Text.Get(TEXT_GRAPHICSWINDOW));
+		strcpy(tempstr, Text.Get(TEXT_GRAPHICSWINDOW));
 	}
 	GuiEnt("guibutton", "button1", V, S, CVec3(1, 1, 1),
 		tempstr, BID_Mode);  AddVec3(L, V);

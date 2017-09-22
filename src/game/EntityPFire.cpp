@@ -278,11 +278,11 @@ int WIDTH, HEIGHT;
 //Timer tmr2;
 int Burns = 0, BurnTimes = 0, KindleTimes = 0, ParticleTimes = 0, BlitTimes = 0;
 
-unsigned char BurnFlags[2048];
+uint8_t BurnFlags[2048];
 
 Particle		p[MAX_PART];
 //HWND			hwnd, dwnd;
-unsigned char	fade[256], half[256];
+uint8_t	fade[256], half[256];
 
 int resolution = 1;
 bool			NoiseBurn = false, Follow = true, MultipleFollow = true, UseGravity = true;
@@ -400,9 +400,9 @@ bool Preview = false;
 int BlankedSecs = 0;
 int TotalSecs = 0;
 
-long int FirstUseTime = 0;
+int64_t FirstUseTime = 0;
 
-long int SecsStart = 0;
+int64_t SecsStart = 0;
 
 int FlameHalf = 0;
 
@@ -486,7 +486,7 @@ void DoFire(void *bData, int bWidth, int bHeight, int bPitch){
 	//
 	//
 	int i, j;//, l;
-	unsigned char *tdata, *tdata2;
+	uint8_t *tdata, *tdata2;
 	LastTime = Time;
 	Time = time(NULL);
 	//Gravity direction, based on time.
@@ -673,12 +673,12 @@ void DoFire(void *bData, int bWidth, int bHeight, int bPitch){
 //	if(buf.Lock(&bdesc)){
 	if(bData){//dib.Data()){
 		//Draw particles.
-		unsigned char *data, *data2;
+		uint8_t *data, *data2;
 		int pitch;
 		int d, e, dir, x, y, dx, dy;
-		data = (unsigned char*)bData;//dib.Data();//bdesc.data;
+		data = (uint8_t*)bData;//dib.Data();//bdesc.data;
 		pitch = bPitch;//dib.Pitch();//bdesc.pitch;
-		unsigned char *bdescdata = (unsigned char*)bData;//dib.Data();
+		uint8_t *bdescdata = (uint8_t*)bData;//dib.Data();
 		int bdescpitch = bPitch;//dib.Pitch();
 		int bdescwidth = bWidth;//dib.Width();
 		int bdescheight = bHeight;//dib.Height();
@@ -764,7 +764,7 @@ void DoFire(void *bData, int bWidth, int bHeight, int bPitch){
 					d = j = -dx; e = abs(dy);
 					data2 = data + x + y * pitch;
 					if(dy < 0) dir = -pitch; else dir = pitch;
-					unsigned char c = p[i].color, hc = c >> 1;
+					uint8_t c = p[i].color, hc = c >> 1;
 					while(dx >= 0){	//Draw start and end pixels.
 						*(data2 - pitch) = std::max(*(data2 - pitch), hc);
 						*(data2) = std::max(*(data2), c);
@@ -785,7 +785,7 @@ void DoFire(void *bData, int bWidth, int bHeight, int bPitch){
 					d = j = -dy; e = abs(dx);
 					data2 = data + x + y * pitch;
 					if(dx < 0) dir = -1; else dir = 1;
-					unsigned char c = p[i].color, hc = c >> 1;
+					uint8_t c = p[i].color, hc = c >> 1;
 					while(dy >= 0){	//Draw start and end pixels.
 						*(data2 - 1) = std::max(*(data2 - 1), hc);
 						*(data2) = std::max(*(data2), c);
@@ -805,17 +805,17 @@ void DoFire(void *bData, int bWidth, int bHeight, int bPitch){
 		//Kindle bottom row for main fire.
 //		tmr2.Start();
 		if(BurnDown){
-			tdata = (unsigned char*)bdescdata + (BYOFF) * bdescpitch;
-			memset((unsigned char*)bdescdata + (HEIGHT - BYOFF) * bdescpitch, 0, bdescwidth);
+			tdata = (uint8_t*)bdescdata + (BYOFF) * bdescpitch;
+			memset((uint8_t*)bdescdata + (HEIGHT - BYOFF) * bdescpitch, 0, bdescwidth);
 		}else{
-			tdata = (unsigned char*)bdescdata + (HEIGHT - BYOFF) * bdescpitch;
-			memset((unsigned char*)bdescdata + (BYOFF) * bdescpitch, 0, bdescwidth);
+			tdata = (uint8_t*)bdescdata + (HEIGHT - BYOFF) * bdescpitch;
+			memset((uint8_t*)bdescdata + (BYOFF) * bdescpitch, 0, bdescwidth);
 		}
 		static double flamenoisey = 0.0;
 		if(NoiseBurn){
 			flamenoisey += FlameSpeed;
 			for(x = BXOFF; x < WIDTH - BXOFF; x++){
-				*(tdata + x) = (64 + (unsigned char)(basis.Noise((double)x * FlameSpeed, flamenoisey, 2) * 191.0)) >>FlameHalf;
+				*(tdata + x) = (64 + (uint8_t)(basis.Noise((double)x * FlameSpeed, flamenoisey, 2) * 191.0)) >>FlameHalf;
 			}
 		}else{
 			y = rand() & (255 >>FlameHalf);
@@ -834,19 +834,19 @@ void DoFire(void *bData, int bWidth, int bHeight, int bPitch){
 //		tmr2.Start();
 		Burns++;
 		//New burn code.
- #define BLONG unsigned long
+ #define BLONG uint32_t
  #define BLONGS sizeof(BLONG)
- #define UCP (unsigned char*)
+ #define UCP (uint8_t*)
  #define BURNIT(n) temp = (*(UCP lptr + n - pitch) + *(UCP lptr + n - 1) + *(UCP lptr + n) + *(UCP lptr + n + 1) - BURNFADE) >>2; \
-	*(UCP lptr + n - pitch) = (unsigned char)(temp < 0 ? 0 : temp);
+	*(UCP lptr + n - pitch) = (uint8_t)(temp < 0 ? 0 : temp);
  #define BURNIT2(n) temp = (*(UCP lptr + n + pitch) + *(UCP lptr + n - 1) + *(UCP lptr + n) + *(UCP lptr + n + 1) - BURNFADE) >>2; \
-	*(UCP lptr + n + pitch) = (unsigned char)(temp < 0 ? 0 : temp);
+	*(UCP lptr + n + pitch) = (uint8_t)(temp < 0 ? 0 : temp);
 		BLONG *lptr = (BLONG*)bdescdata;
 		int lpitch = bdescpitch / BLONGS;
 		int lwidth = bdescwidth / BLONGS;
 		int xlwidth = lwidth - BX4OFF;
 		int temp;//, x2;
-		unsigned char* bf;
+		uint8_t* bf;
 		if(1){
 		if(BurnDown){
 			for(y = HEIGHT - BYOFF - 2; y > BYOFF - 1; y--){
@@ -866,7 +866,7 @@ void DoFire(void *bData, int bWidth, int bHeight, int bPitch){
 				}
 			//	lptr -= lpitch + lwidth + (BX4OFF * 2);
 				if(y & 1){
-					tdata = (unsigned char*)bdescdata + y * bdescpitch + BXOFF;
+					tdata = (uint8_t*)bdescdata + y * bdescpitch + BXOFF;
 					if(y > BYOFF && y < HEIGHT - BYOFF - 1){	//Keeps boost splatter off edges.
 						tdata2 = tdata + 1 + (rand() % (WIDTH - BXOFF * 2 - 2));
 						if(*tdata2 > 32 && *tdata2 < 128){
@@ -895,7 +895,7 @@ void DoFire(void *bData, int bWidth, int bHeight, int bPitch){
 				}
 			//	lptr += lpitch - lwidth + (BX4OFF * 2);
 				if(y & 1){
-					tdata = (unsigned char*)bdescdata + y * bdescpitch + BXOFF;
+					tdata = (uint8_t*)bdescdata + y * bdescpitch + BXOFF;
 					if(y > BYOFF && y < HEIGHT - BYOFF - 1){	//Keeps boost splatter off edges.
 						tdata2 = tdata + 1 + (rand() % (WIDTH - BXOFF * 2 - 2));
 						if(*tdata2 > 32 && *tdata2 < 128){
@@ -931,7 +931,7 @@ void DoFire(void *bData, int bWidth, int bHeight, int bPitch){
 				}
 				int xerr, yerr, xeadd, yeadd;
 				int srcy, srcx;
-				unsigned char *src, *dst;
+				uint8_t *src, *dst;
 				int x, y;
 				int w = WIDTH - BXOFF * 2;
 				int h = (HEIGHT - BYOFF * 2) - 1;
@@ -940,7 +940,7 @@ void DoFire(void *bData, int bWidth, int bHeight, int bPitch){
 				xeadd = xshrink;
 				srcy = yshrink >>1;
 				//
-				unsigned char clamptab[512];
+				uint8_t clamptab[512];
 				for(int i = 0; i < 512; i++) clamptab[i] = std::min(i, 255);
 				//
 				for(y = 0; y < h; y++){
@@ -951,10 +951,10 @@ void DoFire(void *bData, int bWidth, int bHeight, int bPitch){
 					xerr = w / 2;
 					if(Blast){
 						for(x = w; x; x--){
-							unsigned char tc = *src >>1;
+							uint8_t tc = *src >>1;
 						//	int t = (*dst >>1) + (tc >>2) + (tc);//(((*src <<7)) >>8);
 						//	if(t > 255) *dst = 255;
-						//	else *dst = (unsigned char)t;
+						//	else *dst = (uint8_t)t;
 							*dst = clamptab[(*dst >>1) + (tc >>2) + (tc)];//(((*src <<7)) >>8);
 							//
 							xerr += xeadd;
@@ -967,7 +967,7 @@ void DoFire(void *bData, int bWidth, int bHeight, int bPitch){
 							*dst = (*dst >>1) + (*src >>1);
 						//	int t = (*dst >>1) + (*src >>1) - 2;
 						//	if(t < 0) *dst = 0;
-						//	else *dst = (unsigned char)t;
+						//	else *dst = (uint8_t)t;
 							dst++;
 							xerr += xeadd;
 							if(xerr >= w) xerr -= w;

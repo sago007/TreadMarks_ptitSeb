@@ -105,9 +105,9 @@ struct LodTree;
 
 struct BinaryTriangle2{
 //	BinaryTriangle2 *l, *r, *b, *cl, *cr;
-	unsigned short l, r, b, cl, cr;
+	uint16_t l, r, b, cl, cr;
 //	float h;	//Split vertex height.
-	unsigned char ih, dummy;
+	uint8_t ih, dummy;
 	union{
 		float height;
 		int iheight;
@@ -165,7 +165,7 @@ inline int ElectiveSplitSafe(){
 	return NextBinTriPool < BINTRISAFE;
 }
 //BinaryTriangle2 *AllocBinTri(){
-unsigned short AllocBinTri(){
+uint16_t AllocBinTri(){
 	if(NextBinTriPool < BINTRIPOOL){
 		BinaryTriangle2 *t = &BinTriPool[NextBinTriPool++];
 	//	t->Null();
@@ -283,10 +283,10 @@ static LodTree *lod = 0;
 static float variance = 0.0f;
 
 //NOTE: This function, normally, ROUNDS TO NEAREST!!!
-inline long FloatToLong(float f) { // relies on IEEE format for float
+inline int32_t FloatToLong(float f) { // relies on IEEE format for float
 	f += -0.499999f;	//This change makes it CHOP TO LOWER!!
 	f += (3 << 22);
-	return ((*(long*)&f)&0x007fffff) - 0x00400000;
+	return ((*(int32_t*)&f)&0x007fffff) - 0x00400000;
 //	return (long)f;
 }
 
@@ -470,9 +470,9 @@ void BinaryTriangle2::TestSplitClip(int level, int index,
 //A section of world for rendering, may point to wrapped terrain off-map.
 struct MapPatch2{
 	int x, y;	//Coordinates in patch grid.
-	unsigned int id;
+	uint32_t id;
 //	BinaryTriangle2 ul, dr;
-	unsigned short ul, dr;
+	uint16_t ul, dr;
 	LodTree *lodul, *loddr;
 	MapPatch2() : x(0), y(0), id(0) {
 	//	ul.Null(); ul.b = &dr;	//Links component root bintris together at bottoms.
@@ -482,7 +482,7 @@ struct MapPatch2{
 		BTP(ul)->Null(); BTP(ul)->b = dr;	//Links component root bintris together at bottoms.
 		BTP(dr)->Null(); BTP(dr)->b = ul;
 	};
-	MapPatch2(int X, int Y, unsigned int ID) : x(X), y(Y), id(ID) {
+	MapPatch2(int X, int Y, uint32_t ID) : x(X), y(Y), id(ID) {
 	//	ul.Null(); ul.b = &dr;	//Links component root bintris together at bottoms.
 	//	dr.Null(); dr.b = &ul;
 		ul = AllocBinTri();
@@ -490,7 +490,7 @@ struct MapPatch2{
 		BTP(ul)->Null(); BTP(ul)->b = dr;	//Links component root bintris together at bottoms.
 		BTP(dr)->Null(); BTP(dr)->b = ul;
 	};
-	void SetCoords(int X, int Y, unsigned int ID){
+	void SetCoords(int X, int Y, uint32_t ID){
 		x = X;
 		y = Y;
 		id = ID;
@@ -729,7 +729,7 @@ bool GLRenderEngine2::GLTerrainRender(Terrain *map, Camera *cam, int flags, floa
 	//
 	//
 	//Align bintripool on 32byte boundary
-	BinTriPool = (BinaryTriangle2*)((((unsigned long)RealBinTriPool) + 31) & (~31));
+	BinTriPool = (BinaryTriangle2*)((((uintptr_t)RealBinTriPool) + 31) & (~31));
 //	BinTriPool = RealBinTriPool;
 	//
 	msecs += ms;

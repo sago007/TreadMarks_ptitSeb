@@ -43,6 +43,7 @@
 #include <algorithm>
 
 #include <cstdlib>
+#include <cstdint>
 #include "Quantizer.h"
 #include "CStr.h"
 
@@ -50,32 +51,34 @@
 #include "Posix/cifm.h"
 #endif
 
+#pragma pack(push, 1)
 struct ARGB{
 	union{
-		unsigned long argb;
-		unsigned short argb16;	//Can NOT be set through use of b, g, r, and a.
+		uint32_t argb;
+		uint16_t argb16;	//Can NOT be set through use of b, g, r, and a.
 		struct{
-			unsigned char b, g, r, a;
+			uint8_t b, g, r, a;
 		};	// FIXME: anonymous structs are BAD!
-		unsigned char byte[4];
+		uint8_t byte[4];
 	};
 };
+#pragma pack(pop)
 
-bool BGRAfromPE(ARGB *argb, PaletteEntry *pe, unsigned char alpha = 0);	//Fills an array of 256 longs with 32bit ARGB intel format color entries matching 256 entry PE array, for quick 8bit to 32bit conversion.
-bool RGBAfromPE(ARGB *argb, PaletteEntry *pe, unsigned char alpha = 0);	//Same in OpenGL style format.
+bool BGRAfromPE(ARGB *argb, PaletteEntry *pe, uint8_t alpha = 0);	//Fills an array of 256 longs with 32bit ARGB intel format color entries matching 256 entry PE array, for quick 8bit to 32bit conversion.
+bool RGBAfromPE(ARGB *argb, PaletteEntry *pe, uint8_t alpha = 0);	//Same in OpenGL style format.
 
 inline int HiBit(int num){
 	int bit = 31;
 	while(bit){
-		if((unsigned long)num & (unsigned long)((unsigned long)1 << bit)) return bit;
+		if((uint32_t)num & (uint32_t)((uint32_t)1 << bit)) return bit;
 		bit--;
 	}
 	return 0;
 };	//Returns the number of the highest bit set, starting from 0.
 
-bool MakeRemapTable(unsigned char *Remap, const PaletteEntry *oldpe, const PaletteEntry *pe);
+bool MakeRemapTable(uint8_t *Remap, const PaletteEntry *oldpe, const PaletteEntry *pe);
 	//Makes a remapping table to remap from oldpe to pe.
-bool MakeRemapTable(unsigned char *Remap, const PaletteEntry *oldpe, const InversePal *inv);
+bool MakeRemapTable(uint8_t *Remap, const PaletteEntry *oldpe, const InversePal *inv);
 	//Makes a remapping table to remap from oldpe to pe.
 
 class Bitmap;
@@ -141,11 +144,11 @@ private:
 	int CalcPitch(int w, int b){ return ((w * (b >>3)) + 3) & (~3); };
 	int CalcLength(int w, int h, int b){ return CalcPitch(w, b) * std::abs(h); };
 protected:
-	unsigned char *data;
+	uint8_t *data;
 	int width, height, pitch, bpp;	//bpp currently must be 8 or 24/32!
 	int pixelpitch, colorbytes, alphaskip;
 	PaletteEntry *ppe;
-	unsigned char *premap;
+	uint8_t *premap;
 public:
 	int id;	//User-specifiable ID number, for e.g. OpenGL texture caching.  Set to 0 on init.
 	int flags;	//Flags that record what has been done to the bitmap.  Set to 0 on init.
@@ -161,15 +164,15 @@ public:
 	void Free();	//Free not virtual!!!
 //	void Palette(PALETTEENTRY *pe){ ppe = pe; };	//Set and get palette pointer.  POINTED TO ARRAY MUST EXIST THROUGH LIFE OF BITMAP!
 	PaletteEntry *Palette(){ return ppe; };
-//	void RemapTable(unsigned char *remap){ premap = remap; };	//Set and get 256 entry remap table pointer.  DITTO!
-	unsigned char *RemapTable(){ return premap; };
+//	void RemapTable(uint8_t *remap){ premap = remap; };	//Set and get 256 entry remap table pointer.  DITTO!
+	uint8_t *RemapTable(){ return premap; };
 	bool Init(int w, int h, int bpp = 8);
 		//Frees and/or allocates new image data for w and h dimensions.
 	bool Init(Bitmap *bmp){	//Clones geometry of bitmap.
 		if(bmp) return Init(bmp->Width(), bmp->Height(), bmp->BPP());
 		return false;
 	};
-	bool Clear(unsigned char color = 0);
+	bool Clear(uint8_t color = 0);
 		//Clears bitmap to supplied value.
 	bool To32Bit(PaletteEntry *pe = NULL);
 		//Converts a 24bit or 8bit image to 32bit.
@@ -232,7 +235,7 @@ public:
 		//quartet from the source.  Set trans to true to zero all dest pixels when
 		//the top-left of the source box sample is zero, instead of mixing a really
 		//dark output color if say only one of the other 3 pixels is non-trans.
-	bool Remap(unsigned char *RemapTable = NULL);
+	bool Remap(uint8_t *RemapTable = NULL);
 		//Remaps bitmap using 256 byte remap table provided.
 	bool ColorCorrect(float rgain, float ggain, float bgain, float again,
 					float rbias, float gbias, float bbias, float abias,
@@ -282,7 +285,7 @@ public:
 	int Height(){ return height;};
 	int Pitch(){ return pitch;};
 	int BPP(){ return bpp;};
-	unsigned char *Data(){ return data;};
+	uint8_t *Data(){ return data;};
 	int XHot(){ return xhot; };
 	int YHot(){ return yhot; };
 	void Hotspot(int x, int y){ xhot = x; yhot = y; };
@@ -307,7 +310,7 @@ public:
 	//copy the base class!  Be sure to manually copy it, if copy/assign ops are added
 	//for a derived class like this one.
 	PaletteEntry pe[256];
-	unsigned char remap[256];
+	uint8_t remap[256];
 	ARGB tcremap[256];	//High or True-Color reverse indexing table for 8bit images.
 	Image(int n = 0) : bmp(NULL), nBitmaps(1) {
 		ppe = pe;
@@ -414,7 +417,7 @@ public:
 		if(inv) return MakeRemapTable(remap, pe, inv);	//Remap table based on inverse palette.
 		return false;
 	};
-	bool SetRemapTable(const unsigned char *rmp){	//rmp is 256 element array.
+	bool SetRemapTable(const uint8_t *rmp){	//rmp is 256 element array.
 		if(rmp){
 			memcpy(remap, rmp, 256);
 			return true;
@@ -527,7 +530,7 @@ public:
 	bool InitSet(int n){	//Ok, now InitSet does NOT harm the original bitmap!!
 		FreeSet();
 		if(n > 0){
-			if(names = new CStr[n]){
+			if((names = new CStr[n])!=NULL){
 				if(n == 1) return true;
 				if(n > 1){
 					if((img = new Image[n - 1])){
@@ -580,7 +583,7 @@ public:
 		for(int n = 0; n < nImages; n++) if(false == (*this)[n].InitRemapTable(inv)) return false;
 		return true;
 	};
-	bool SetRemapTable(const unsigned char *rmp){	//rmp is 256 element array.
+	bool SetRemapTable(const uint8_t *rmp){	//rmp is 256 element array.
 		for(int n = 0; n < nImages; n++) if(false == (*this)[n].SetRemapTable(rmp)) return false;
 		return true;
 	};

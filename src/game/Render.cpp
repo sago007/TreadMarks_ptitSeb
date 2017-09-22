@@ -160,7 +160,7 @@ bool MixTable::MakeLookup(PALETTEENTRY *pe, bool disk){
 	if(NULL == pe) return false;
 
 	int r, g, b, c, i, k, diff, col, t, OK;
-	unsigned char tempfooey;
+	uint8_t tempfooey;
 	const char fn[] = "MixLookup.dat";
 	const int tablesize = 256 * 256 * 4;
 	PALETTEENTRY tpe[256];
@@ -245,7 +245,7 @@ bool MixTable::MakeLookup(PALETTEENTRY *pe, bool disk){
 /*	return true;
 }
 */
-bool RenderEngine::Init16BitTables(int rmask, int gmask, int bmask, PaletteEntry *pe, unsigned short *C816){
+bool RenderEngine::Init16BitTables(int rmask, int gmask, int bmask, PaletteEntry *pe, uint16_t *C816){
 	RedMask = (rmask &= 0xffff);
 	GreenMask = (gmask &= 0xffff);
 	BlueMask = (bmask &= 0xffff);
@@ -1006,7 +1006,7 @@ bool RenderEngine::TerrainRender(Terrain *map, Camera *cam, PolyRender *poly,
 									//Testing temporary dither.
 								//	& (line))// & (VMix >>5))
 									);
-	//							*surf = (unsigned char)VMixV;
+	//							*surf = (uint8_t)VMixV;
 								VMix += VMixD;
 								//MARKMIX(mapcy, *cbufp);
 								surf += lPitch;
@@ -1084,7 +1084,7 @@ bool RenderEngine::TerrainRender(Terrain *map, Camera *cam, PolyRender *poly,
 			int iter;
 		//	int, skypow = Sky->HiBit(Sky->Width()),
 		//	int skyh = Sky->Width();
-			unsigned char *skydata = Sky->Data() + (Sky->Height() - 1 - (sx >>FP2)) * Sky->Pitch();
+			uint8_t *skydata = Sky->Data() + (Sky->Height() - 1 - (sx >>FP2)) * Sky->Pitch();
 			if(t > 0){
 				if(rend16bit == 0){
 					surf = (UCHAR*)rbd->data + i;

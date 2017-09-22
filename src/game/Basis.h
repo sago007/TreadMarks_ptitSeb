@@ -24,9 +24,11 @@
 #define MAXNTH 10
 #define TABSIZE 256
 
+#include <stdint.h>
+
 struct FeaturePoint{
 	float f;	//Distance, sorted by.
-	unsigned long i;	//Non-unique ID, 0-255.
+	uint32_t i;	//Non-unique ID, 0-255.
 };
 
 class Basis{
@@ -37,8 +39,8 @@ public:
 private:
 	float NoiseFloatTable[TABSIZE * 2];	//0.0 - 1.0
 	float NoiseNegTable[TABSIZE * 2];		//-0.5 - 0.5
-	unsigned char NoisePermTable[TABSIZE];
-	unsigned char NoiseCharTable[TABSIZE];
+	uint8_t NoisePermTable[TABSIZE];
+	uint8_t NoiseCharTable[TABSIZE];
 public:
 	Basis(){};
 	Basis(int seed){ Seed(seed); };
@@ -56,7 +58,7 @@ public:
 	//individual cells different shades.
 
 	float Noise(float x, float y, int octaves = 0, int xrpt = 0, int yrpt = 0);
-//	int Noise(unsigned char *table, int length, float x, float y, float xdelta, float ydelta,
+//	int Noise(uint8_t *table, int length, float x, float y, float xdelta, float ydelta,
 //		int octaves = 0, int xrpt = 0, int yrpt = 0);
 };
 

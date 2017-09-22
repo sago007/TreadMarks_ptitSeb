@@ -37,7 +37,7 @@ public:
 		float height;
 		int iheight;
 	};
-	unsigned int iIndex; // index into vertex array
+	uint32_t iIndex; // index into vertex array
 	void Null(){
 		LeftNeighbor = 0;
 		RightNeighbor = 0;
@@ -64,7 +64,7 @@ private:
 	int					NextBinTriPool;
 
 public:
-	BinTriPool() {NextBinTriPool = 0; 	AlignedBinTriPool = (BinaryTriangleR3*)((((unsigned long)RealBinTriPool) + 31) & (~31));}
+	BinTriPool() {NextBinTriPool = 0; 	AlignedBinTriPool = (BinaryTriangleR3*)((((uintptr_t)RealBinTriPool) + 31) & (~31));}
 	void ResetBinTriPool(){ NextBinTriPool = 0;}
 	int AvailBinTris(){ return BINTRIPOOL - NextBinTriPool;}
 	int ElectiveSplitSafe(){ return NextBinTriPool < BINTRISAFE;}
@@ -85,18 +85,18 @@ public:
 //A section of world for rendering, may point to wrapped terrain off-map.
 struct MapPatch{
 	int x, y;	//Coordinates in patch grid.
-	unsigned int id;
+	uint32_t id;
 	BinaryTriangleR3 ul, dr;
 	LodTree *lodul, *loddr;
 	MapPatch() : x(0), y(0), id(0) {
 		ul.Null(); ul.BottomNeighbor = &dr;	//Links component root bintris together at bottoms.
 		dr.Null(); dr.BottomNeighbor = &ul;
 	};
-	MapPatch(int X, int Y, unsigned int ID) : x(X), y(Y), id(ID) {
+	MapPatch(int X, int Y, uint32_t ID) : x(X), y(Y), id(ID) {
 		ul.Null(); ul.BottomNeighbor = &dr;	//Links component root bintris together at bottoms.
 		dr.Null(); dr.BottomNeighbor = &ul;
 	};
-	void SetCoords(int X, int Y, unsigned int ID){
+	void SetCoords(int X, int Y, uint32_t ID){
 		x = X;
 		y = Y;
 		id = ID;

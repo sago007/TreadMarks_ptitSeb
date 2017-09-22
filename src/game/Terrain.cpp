@@ -147,7 +147,7 @@ bool Terrain::Load(IFF *iff, int *numecoptr, EcoSystem *eco, int maxeco, bool mi
 	//
 //	IFF iff;	//Destructor for stack object will close file.
 	int x, y, i;
-	unsigned char buf[16384];
+	uint8_t buf[16384];
 //	if(iff->OpenIn(name)){
 	if(iff->IsFileOpen() && iff->IsFileRead()){
 		if(iff->IsType("VOXL")){
@@ -190,7 +190,7 @@ bool Terrain::Load(IFF *iff, int *numecoptr, EcoSystem *eco, int maxeco, bool mi
 					}
 					if(Encoding == TEXID_ENCODE_RLE){	//New RLE reader.
 						x = y = 0;
-						unsigned char byte = 0, run = 0;
+						uint8_t byte = 0, run = 0;
 						if(mirror){
 							y = height - 1;
 							do{
@@ -219,7 +219,7 @@ bool Terrain::Load(IFF *iff, int *numecoptr, EcoSystem *eco, int maxeco, bool mi
 				numeco = std::min(numeco, maxeco);
 				*numecoptr = numeco;
 				int floats = iff->ReadLong();	//floats per eco.
-				uchar slen;
+				uint8_t slen;
 				if(floats >= 6){
 					for(i = 0; i < numeco; i++){
 						eco[i].MinAlt((float)iff->ReadFloat());
@@ -230,7 +230,7 @@ bool Terrain::Load(IFF *iff, int *numecoptr, EcoSystem *eco, int maxeco, bool mi
 						eco[i].MaxAngle2((float)iff->ReadFloat());
 						if(floats > 6) for(x = 6; x < floats; x++) iff->ReadFloat();
 						slen = iff->ReadByte();	//Length includes ending null!
-						iff->ReadBytes((uchar*)eco[i].name, slen);
+						iff->ReadBytes((uint8_t*)eco[i].name, slen);
 					}
 				}
 			}
@@ -253,7 +253,7 @@ bool Terrain::Save(IFF *iff, EcoSystem *eco, int numeco){
 	if(iff == NULL || data == NULL || width <= 0 || height <= 0) return false;
 //	IFF iff;
 	int x, y, i;
-	unsigned char buf[16384];
+	uint8_t buf[16384];
 //	if(iff->OpenOut(name, "VOXL")){
 	if(iff->IsFileOpen() && iff->IsFileWrite() && iff->SetType("VOXL")){
 		//Write header.
@@ -278,7 +278,7 @@ bool Terrain::Save(IFF *iff, EcoSystem *eco, int numeco){
 			iff->WriteLong(TEXID_ENCODE_RLE);
 			//RLE will be simple, dumb, run length byte, run data byte, repeat.
 			//A run of length 0 is an escape signal, a data of 0 after means the end.
-			unsigned char byte = 0, lbyte = 0;
+			uint8_t byte = 0, lbyte = 0;
 			int run = 0;
 			for(y = 0; y < height; y++){
 				for(x = 0; x < width; x++){
@@ -319,7 +319,7 @@ bool Terrain::Save(IFF *iff, EcoSystem *eco, int numeco){
 				iff->WriteFloat((float)eco[i].MinAngle2());
 				iff->WriteFloat((float)eco[i].MaxAngle2());
 				iff->WriteByte(strlen(eco[i].name) + 1);	//Length includes ending null!
-				iff->WriteBytes((uchar*)eco[i].name, strlen(eco[i].name) + 1);
+				iff->WriteBytes((uint8_t*)eco[i].name, strlen(eco[i].name) + 1);
 			}
 			iff->EndChunk();
 		}
@@ -336,7 +336,7 @@ bool Terrain::Init(int x, int y){
 	if(x <= 0 || y <= 0) return false;
 	x = 1 << (widthpow = HiBit(x));	//Make sure width and height are powers of two now!
 	y = 1 << (heightpow = HiBit(y));
-	if(NULL == (data = (unsigned short*)malloc(x * (y + 2) * 2))){
+	if(NULL == (data = (uint16_t*)malloc(x * (y + 2) * 2))){
 		Free();
 		return false;
 	}
@@ -346,7 +346,7 @@ bool Terrain::Init(int x, int y){
 	heightmask = height - 1;
 	//
 //	if(!data32){
-	if(NULL == (data32 = (unsigned long*)malloc(width * height * sizeof(unsigned long)))){
+	if(NULL == (data32 = (uint32_t*)malloc(width * height * sizeof(uint32_t)))){
 		Free();
 		return false;
 	}
@@ -361,7 +361,7 @@ bool Terrain::Clear(){
 	return true;
 }
 bool Terrain::InitTextureID(){
-	if(width > 0 && height > 0 && texid == NULL && (texid = (unsigned char*)malloc(width * height))){
+	if(width > 0 && height > 0 && texid == NULL && (texid = (uint8_t*)malloc(width * height))){
 		memset(texid, 0, width * height);
 		return true;
 	}
@@ -370,33 +370,33 @@ bool Terrain::InitTextureID(){
 void Terrain::RotateEdges(){
 	int sline, dline;
 	if(data && width > 0 && height > 0){
-		unsigned short *tdata = (unsigned short*)malloc(width * height * 2);
+		uint16_t *tdata = (uint16_t*)malloc(width * height * 2);
 		if(tdata){
 			memcpy(tdata, data, width * height * 2);
 			for(sline = 0; sline < height; sline++){
 				dline = sline + (height >>1);
 				if(dline >= height) dline -= height;
-				memcpy((unsigned char*)data + dline * width * 2, (unsigned char*)tdata + sline * width * 2 + width, width);
-				memcpy((unsigned char*)data + dline * width * 2 + width, (unsigned char*)tdata + sline * width * 2, width);
+				memcpy((uint8_t*)data + dline * width * 2, (uint8_t*)tdata + sline * width * 2 + width, width);
+				memcpy((uint8_t*)data + dline * width * 2 + width, (uint8_t*)tdata + sline * width * 2, width);
 			}
 			free(tdata);
 		}
 		if(texid){
-			unsigned char *ttexid = (unsigned char*)malloc(width * height);
+			uint8_t *ttexid = (uint8_t*)malloc(width * height);
 			if(ttexid){
 				memcpy(ttexid, texid, width * height);
 				for(sline = 0; sline < height; sline++){
 					dline = sline + (height >>1);
 					if(dline >= height) dline -= height;
-					memcpy((unsigned char*)texid + dline * width, (unsigned char*)ttexid + sline * width + width / 2, width / 2);
-					memcpy((unsigned char*)texid + dline * width + width / 2, (unsigned char*)ttexid + sline * width, width / 2);
+					memcpy((uint8_t*)texid + dline * width, (uint8_t*)ttexid + sline * width + width / 2, width / 2);
+					memcpy((uint8_t*)texid + dline * width + width / 2, (uint8_t*)ttexid + sline * width, width / 2);
 				}
 				free(ttexid);
 			}
 		}
 	}
 }
-int Terrain::Blow(unsigned char *dest, int dw, int dh, int dp,
+int Terrain::Blow(uint8_t *dest, int dw, int dh, int dp,
 		 int sx, int sy, int sx2, int sy2, int flag, int destbpp, PaletteEntry pe[256]){
 	//Check for sanity.
 	if(data == NULL || dest == NULL || dw <= 0 || dh <= 0 ||
@@ -412,8 +412,8 @@ int Terrain::Blow(unsigned char *dest, int dw, int dh, int dp,
 		//New code.
 		if(flag && pe){
 			for(int y = sy; y < sy2; y++){
-				unsigned char *dst = dest + sx * 4 + y * dp;
-				unsigned char *src = (unsigned char*)data + 1 + sx * 2 + y * width * 2;
+				uint8_t *dst = dest + sx * 4 + y * dp;
+				uint8_t *src = (uint8_t*)data + 1 + sx * 2 + y * width * 2;
 				for(int x = sx; x < sx2; x++){
 					dst[0] = pe[*src].peBlue;
 					dst[1] = pe[*src].peGreen;
@@ -426,8 +426,8 @@ int Terrain::Blow(unsigned char *dest, int dw, int dh, int dp,
 		}else{
 			if(data32){
 				for(int y = sy; y < sy2; y++){
-					unsigned char *dst = dest + sx * 4 + y * dp;
-					unsigned char *src = (unsigned char*)data32 + sx * 4 + y * width * 4;
+					uint8_t *dst = dest + sx * 4 + y * dp;
+					uint8_t *src = (uint8_t*)data32 + sx * 4 + y * width * 4;
 					for(int x = sx; x < sx2; x++){
 						dst[0] = src[2];
 						dst[1] = src[1];
@@ -441,9 +441,9 @@ int Terrain::Blow(unsigned char *dest, int dw, int dh, int dp,
 		}
 	}else{
 		//Fall back to old 8-bit code.
-		unsigned char *tdest = dest + sx + sy * dp;
+		uint8_t *tdest = dest + sx + sy * dp;
 		int tdestp = dp - (sx2 - sx);	//Bytes to add to dest each line.
-		unsigned char *tsrc = (unsigned char*)data + flag + sx * 2 + sy * width * 2;
+		uint8_t *tsrc = (uint8_t*)data + flag + sx * 2 + sy * width * 2;
 		int tsrcp = width * 2 - (sx2 - sx) * 2;
 		int x, y;
 		for(y = sy; y < sy2; y++){
@@ -499,7 +499,7 @@ bool Terrain::FractalForm(int level, int min, int max, int Form1, int Form2, Eco
 	step = 1 <<level;
 	int MiniW = width / step + 1;
 	int MiniH = height / step + 1;
-	unsigned char *MiniD = (unsigned char*)malloc(MiniW * MiniH);
+	uint8_t *MiniD = (uint8_t*)malloc(MiniW * MiniH);
 	if(!MiniD) return false;
 	//Then fill it in.
 	randrange = (step <<VOXSQUEEZE);// / 2;
@@ -691,10 +691,10 @@ void Terrain::SetLightVector(float lx, float ly, float lz, float amb){
 	}
 	Ambient = amb;
 }
-bool Terrain::RemapTexID(unsigned char *remap){
+bool Terrain::RemapTexID(uint8_t *remap){
 	if(width && height && texid && remap){
 		for(int y = 0; y < height; y++){
-			unsigned char *tt = texid + y * width;
+			uint8_t *tt = texid + y * width;
 			for(int x = width; x; x--){
 				*tt = remap[*tt];
 				tt++;
@@ -784,7 +784,7 @@ bool Terrain::Lightsource(int x1, int y1, int x2, int y2){
 	}
 	return true;
 }
-int Terrain::ClearCMap(unsigned char val){
+int Terrain::ClearCMap(uint8_t val){
 	if(data && width > 0 && height > 0){
 		for(int y = 0; y < height; y++){
 			for(int x = 0; x < width; x++){
@@ -833,10 +833,10 @@ bool Terrain::TextureLight32(EcoSystem *eco, int numeco, int x1, int y1, int x2,
 	float invamb = 1.0f - Ambient;
 	float amb = Ambient * (float)NUM_SHADE;
 	//
-	unsigned char *tdst;
+	uint8_t *tdst;
 	for(y = y1; y < y2; y++){
-	//	tdst = ((unsigned char*)data32) + ((x1 & widthmask) + (y & heightmask) * width) * 4;
-		tdst = ((unsigned char*)data32) + ((y & heightmask) * width) * 4;
+	//	tdst = ((uint8_t*)data32) + ((x1 & widthmask) + (y & heightmask) * width) * 4;
+		tdst = ((uint8_t*)data32) + ((y & heightmask) * width) * 4;
 		for(x = x1; x < x2; x++){
 			int i, T;
 			{
@@ -940,12 +940,12 @@ inline float Terrain::GetSlope(int x, int y, float lx, float ly, float lz){
 	return (tflt[0] * lx + tflt[1] * ly + tflt[2] * lz);
 }
 //Note: This function will only return good data if a color map (SetC) has NOT been applied to this voxel.
-inline unsigned short Terrain::GetBigH(int x, int y){
+inline uint16_t Terrain::GetBigH(int x, int y){
 	if(data == NULL || x < 0 || y < 0 || x >= width || y >= height) return 0;
 	return *(data + x + y * width);
 }
 //Note: Using this function to set a 16-bit height value will overwrite any color map data.
-inline bool Terrain::SetBigH(int x, int y, unsigned short v){
+inline bool Terrain::SetBigH(int x, int y, uint16_t v){
 	if(data == NULL || x < 0 || y < 0 || x >= width || y >= height) return false;
 	*(data + x + y * width) = v;
 	return true;
