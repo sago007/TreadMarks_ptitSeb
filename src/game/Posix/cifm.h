@@ -5,5 +5,6 @@
 
 FILE* ci_fopen(const char* name, const char* mode);
 const char* CI_FixName(const char* name);
+bool ci_FileExists(const char* name);
 
 #endif

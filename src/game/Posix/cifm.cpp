@@ -7,7 +7,6 @@
 #include <dirent.h>
 
 #include "cifm.h"
-#pragma GCC optimize 0
 
 bool ci_FileExists(const char* name) {
     if(!name) return true;

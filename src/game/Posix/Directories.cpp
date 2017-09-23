@@ -14,13 +14,27 @@
 // along with Tread Marks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../Directories.h"
+#include "cifm.h"
+#include <sys/stat.h>
 
 CStr GetAppDataDir()
 {
-    return CStr("~/.local/share/Tread Marks/");
+    static char* appdata = NULL;
+    if(!appdata) {
+        appdata = (char*)malloc(4096);
+        strncpy(appdata, getenv("HOME"), 4096);
+        strncat(appdata, ".TreadMarks", 4096);
+        if(!ci_FileExists(appdata))
+              mkdir(appdata, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    }
+    return CStr(appdata);
 }
 
 CStr GetCommonAppDataDir()
 {
-    return CStr("/usr/local/share/Tread Marks/");
+#ifdef PANDORA
+    return CStr("/mnt/utmp/treadmarks/");
+#else
+    return CStr("/usr/local/share/TreadMarks/");
+#endif
 }
