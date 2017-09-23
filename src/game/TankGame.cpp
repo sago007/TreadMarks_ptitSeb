@@ -2278,6 +2278,15 @@ void CTankGame::DoSfmlEvents()
 
 		case sf::Event::KeyPressed:
 			{
+#ifdef PANDORA
+				if(sfmlEvent.key.code==sf::Keyboard::RShift || sfmlEvent.key.code==sf::Keyboard::RControl) {
+					if(sfmlEvent.key.code==sf::Keyboard::RControl)
+						GetVW()->Ififo.Set("Mouse L", 1);
+					
+					if(sfmlEvent.key.code==sf::Keyboard::RShift)
+						GetVW()->Ififo.Set("Mouse R", 1);
+				} else
+#endif
 				if(sfmlEvent.key.alt)
 				{
 					switch(sfmlEvent.key.code)
@@ -2383,6 +2392,16 @@ void CTankGame::DoSfmlEvents()
 				break;
 			}
 		case sf::Event::KeyReleased:
+#ifdef PANDORA
+			if(sfmlEvent.key.code==sf::Keyboard::RShift || sfmlEvent.key.code==sf::Keyboard::RControl) {
+				if(sfmlEvent.key.code==sf::Keyboard::RControl)
+					GetVW()->Ififo.Set("Mouse L", 0);
+				
+				if(sfmlEvent.key.code==sf::Keyboard::RShift)
+					GetVW()->Ififo.Set("Mouse R", 0);
+			} 
+			else
+#endif
 			{
 				CStr key;
 				key = KeyNameText(sfmlEvent.key.code);
@@ -2390,8 +2409,8 @@ void CTankGame::DoSfmlEvents()
 				GetVW()->Ififo.Set(key, false);
 
 				//OutputDebugString("KeyUp: \"" + key + "\"\n");
-				break;
 			}
+			break;
 		case sf::Event::TextEntered:
 			GetVW()->SetChar(char(sfmlEvent.text.unicode));
 			break;
