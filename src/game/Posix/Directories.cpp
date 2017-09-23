@@ -23,9 +23,10 @@ CStr GetAppDataDir()
     if(!appdata) {
         appdata = (char*)malloc(4096);
         strncpy(appdata, getenv("HOME"), 4096);
-        strncat(appdata, ".TreadMarks", 4096);
+        strncat(appdata, "/.TreadMarks", 4096);
         if(!ci_FileExists(appdata))
               mkdir(appdata, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        strncat(appdata, "/", 4096);
     }
     return CStr(appdata);
 }
