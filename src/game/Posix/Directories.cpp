@@ -15,7 +15,7 @@
 
 #include "../Directories.h"
 #include "cifm.h"
-#include <experimental/filesystem>
+#include <experimental/filesystem>  //Experimental in current compilers. Requires C++17
 
 static void CreateDirectoriesRecursivly(const char* the_path) {
 	std::error_code e;

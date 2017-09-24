@@ -84,6 +84,7 @@ IF(WIN32)
 ELSE()
   SET(POSIX_SRCS
     "Posix/Directories.cpp" 
+    "Posix/Web.cpp"
     "Posix/cifm.cpp")
 
   SET(GAME_SRCS ${GAME_SRCS} ${POSIX_SRCS})
